@@ -18,18 +18,19 @@ buildscript {
     }
 }
 
-repositories {	
-	mavenCentral()
-	maven { url "http://repo.spring.io/libs-release" }
-    maven { url "http://repo.spring.io/milestone" }
-    maven { url "http://repo.spring.io/snapshot" }
-    maven { url "http://clojars.org/repo" }
+repositories {
+    mavenCentral()
+//	maven { url "http://repo.spring.io/libs-release" }
+//    maven { url "http://repo.spring.io/milestone" }
+//    maven { url "http://repo.spring.io/snapshot" }
+//    maven { url "http://clojars.org/repo" }
 }
 
 ext {
     commonsPoolVersion = '2.3'
-	redisVersion = '0.3'
-	springSessionVersion = '1.0.0.RELEASE'
+    redisVersion = '0.6'
+//	redisVersion = '2.8.0'
+    springSessionVersion = '1.0.0.RELEASE'
 }
 
 dependencies {
@@ -38,19 +39,21 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-websocket")
     compile("org.springframework.boot:spring-boot-starter-actuator")
     compile("org.springframework.boot:spring-boot-starter-redis")
-    
+
+//    compile('org.springframework.data:spring-data-jpa:1.8.0.RELEASE')
+
     compile "org.springframework.security:spring-security-messaging"
     compile "org.springframework.session:spring-session:$springSessionVersion"
     compile("org.apache.commons:commons-pool2:$commonsPoolVersion")
-    compile("redis.embedded:embedded-redis:$redisVersion")
-    
+//    compile("redis.embedded:embedded-redis:$redisVersion")
+
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 
 eclipse {
     classpath {
-         containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
-         containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
+        containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
+        containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
     }
 }
 
@@ -63,3 +66,70 @@ configurations.all {
         }
     }
 }
+
+//OLD BUILD FILE
+//apply plugin: 'java'
+//apply plugin: 'eclipse-wtp'
+//apply plugin: 'spring-boot'
+//
+//sourceCompatibility = JavaVersion.VERSION_1_8
+//targetCompatibility = JavaVersion.VERSION_1_8
+//
+//buildscript {
+//    ext {
+//        springBootVersion = '1.2.1.RELEASE'
+//    }
+//    repositories {
+//        mavenCentral()
+//    }
+//
+//    dependencies {
+//        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+//    }
+//}
+//
+//repositories {
+//	mavenCentral()
+//	maven { url "http://repo.spring.io/libs-release" }
+//    maven { url "http://repo.spring.io/milestone" }
+//    maven { url "http://repo.spring.io/snapshot" }
+//    maven { url "http://clojars.org/repo" }
+//}
+//
+//ext {
+//    commonsPoolVersion = '2.3'
+//	redisVersion = '0.3'
+//	springSessionVersion = '1.0.0.RELEASE'
+//}
+//
+//dependencies {
+//    compile("org.springframework.boot:spring-boot-starter-security")
+//    compile("org.springframework.boot:spring-boot-starter-web")
+//    compile("org.springframework.boot:spring-boot-starter-websocket")
+//    compile("org.springframework.boot:spring-boot-starter-actuator")
+//    compile("org.springframework.boot:spring-boot-starter-redis")
+//
+//    compile "org.springframework.security:spring-security-messaging"
+//    compile "org.springframework.session:spring-session:$springSessionVersion"
+//    compile("org.apache.commons:commons-pool2:$commonsPoolVersion")
+//    compile("redis.embedded:embedded-redis:$redisVersion")
+//
+//    testCompile("org.springframework.boot:spring-boot-starter-test")
+//}
+//
+//eclipse {
+//    classpath {
+//         containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
+//         containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
+//    }
+//}
+//
+//configurations.all {
+//    resolutionStrategy {
+//        eachDependency { DependencyResolveDetails details ->
+//            if (details.requested.group == "org.springframework.security") {
+//                details.useVersion "4.0.0.RC1"
+//            }
+//        }
+//    }
+//}

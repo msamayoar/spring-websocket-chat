@@ -8537,7 +8537,7 @@ function $DocumentProvider() {
  * If you wish, you can manually delegate exceptions, e.g.
  * `try { ... } catch(e) { $exceptionHandler(e); }`
  *
- * @param {Error} exception Exception associated with the error.
+ * @param {Error} exceptions Exception associated with the error.
  * @param {string=} cause optional information about the context in which
  *       the error was thrown.
  *

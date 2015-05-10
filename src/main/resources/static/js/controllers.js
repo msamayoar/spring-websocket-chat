@@ -4,14 +4,22 @@
 
 angular.module('springChat.controllers', ['toaster'])
 	.controller('ChatController', ['$scope', '$location', '$interval', 'toaster', 'ChatSocket', function($scope, $location, $interval, toaster, chatSocket) {
-		  
+
+        function log(smth) {
+            console.log(smth);
+        }
+
 		var typing = undefined;
 		
 		$scope.username     = '';
 		$scope.sendTo       = 'everyone';
 		$scope.participants = [];
 		$scope.messages     = [];
-		$scope.newMessage   = ''; 
+		$scope.newMessage   = '';
+		$scope.retrieveMessages = function() {
+            log("Sending request to sync messages");
+			chatSocket.send("/app/sync/messages");
+		};
 		  
 		$scope.sendMessage = function() {
 			var destination = "/app/chat.message";
@@ -21,7 +29,7 @@ angular.module('springChat.controllers', ['toaster'])
 				$scope.messages.unshift({message: $scope.newMessage, username: 'you', priv: true, to: $scope.sendTo});
 			}
 			
-			chatSocket.send(destination, {}, JSON.stringify({message: $scope.newMessage}));
+			chatSocket.send(destination, {}, JSON.stringify({text: $scope.newMessage}));
 			$scope.newMessage = '';
 		};
 		
@@ -61,6 +69,7 @@ angular.module('springChat.controllers', ['toaster'])
 				});
 				  
 				chatSocket.subscribe("/topic/chat.login", function(message) {
+					console.log("in subscribe callback on /topic/chat.login");
 					$scope.participants.unshift({username: JSON.parse(message.body).username, typing : false});
 				});
 		        	 
@@ -85,6 +94,11 @@ angular.module('springChat.controllers', ['toaster'])
 						}
 				  	} 
 				});
+
+				chatSocket.subscribe("/topic/presence", function(message) {
+					var presence = JSON.parse(message.body);
+					console.log("Presence '" + presence.status + "' received from " + presence.user);
+				});
 		        	 
 				chatSocket.subscribe("/topic/chat.message", function(message) {
 					$scope.messages.unshift(JSON.parse(message.body));
@@ -99,6 +113,21 @@ angular.module('springChat.controllers', ['toaster'])
 				chatSocket.subscribe("/user/queue/errors", function(message) {
 					toaster.pop('error', "Error", message.body);
 		        });
+
+                chatSocket.subscribe("/user/queue/sync.messages", function(message) {
+                    var messages = JSON.parse(message.body);
+
+                    log("sync result = " + messages);
+
+                    var length = messages.length;
+					for(var i = 0; i < length; i++) {
+						log(messages[i]);
+					}
+
+                    for(i = messages.length; i--;) {
+                        log("! " + messages[i]);
+                    }
+                });
 		          
 			}, function(error) {
 				toaster.pop('error', 'Error', 'Connection error ' + error);
