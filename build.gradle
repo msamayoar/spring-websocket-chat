@@ -61,7 +61,8 @@ configurations.all {
     resolutionStrategy {
         eachDependency { DependencyResolveDetails details ->
             if (details.requested.group == "org.springframework.security") {
-                details.useVersion "4.0.0.RC1"
+//                details.useVersion "4.0.0.RC1"
+                details.useVersion "4.0.1.RELEASE"
             }
         }
     }

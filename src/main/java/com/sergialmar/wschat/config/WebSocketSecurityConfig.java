@@ -10,10 +10,14 @@ public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBro
 
 	@Override
     protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
-        messages
-        		.antMatchers(SimpMessageType.MESSAGE, "/topic/chat.login", 
-        											  "/topic/chat.logout", 
-        											  "/topic/chat.message").denyAll()
+        messages.simpMessageDestMatchers(
+                "/topic/chat.login",
+                "/topic/chat.logout",
+                "/topic/chat.message")
+//                .antMatchers(SimpMessageType.MESSAGE, "/topic/chat.login",
+//        											  "/topic/chat.logout",
+//        											  "/topic/chat.message")
+                .denyAll()
                 .anyMessage().authenticated();
     }
 }

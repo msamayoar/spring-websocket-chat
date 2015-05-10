@@ -5,6 +5,7 @@ import org.springframework.messaging.handler.invocation.HandlerMethodArgumentRes
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
 import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer;
+import org.springframework.security.messaging.util.matcher.SimpDestinationMessageMatcher;
 
 import java.util.List;
 
@@ -13,15 +14,24 @@ public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBro
 
 	@Override
     protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
-        messages
-        		.antMatchers(SimpMessageType.MESSAGE, "/topic/chat.login", 
-        											  "/topic/chat.logout", 
-        											  "/topic/chat.message").denyAll()
+        messages.simpMessageDestMatchers(
+                "/topic/chat.login",
+                "/topic/chat.logout",
+                "/topic/chat.message")
+//                .antMatchers(SimpMessageType.MESSAGE, "/topic/chat.login",
+//        											  "/topic/chat.logout",
+//        											  "/topic/chat.message")
+                .denyAll()
                 .anyMessage().authenticated();
     }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         super.addArgumentResolvers(argumentResolvers);
+    }
+
+    @Override
+    protected boolean sameOriginDisabled() {
+        return true;
     }
 }
