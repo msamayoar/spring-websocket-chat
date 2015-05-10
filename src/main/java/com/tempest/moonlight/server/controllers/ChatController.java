@@ -79,7 +79,7 @@ public class ChatController {
 	
 	@MessageMapping("/chat.private.{username}")
 	public void filterPrivateMessage(Message message, @Payload ChatMessage chatMessage, @DestinationVariable("username") String username, Principal principal) {
-        if(StringUtils.hasText(username)) {
+        if(!StringUtils.hasText(username)) {
             throw new InvalidUserLoginException(username);
         }
 

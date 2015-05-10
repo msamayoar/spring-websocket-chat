@@ -26,7 +26,7 @@ angular.module('springChat.controllers', ['toaster'])
 
             if ($scope.sendTo != "everyone") {
                 destination = "/app/chat.private." + $scope.sendTo;
-                $scope.messages.unshift({message: $scope.newMessage, username: 'you', priv: true, to: $scope.sendTo});
+                $scope.messages.unshift({text: $scope.newMessage, from: 'you', priv: true, to: $scope.sendTo});
             }
 
             chatSocket.send(destination, {}, JSON.stringify({text: $scope.newMessage}));
