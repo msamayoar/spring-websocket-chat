@@ -16,6 +16,11 @@ angular.module('springChat.controllers', ['toaster'])
         $scope.participants = [];
         $scope.messages = [];
         $scope.newMessage = '';
+
+        $scope.doSmth = function () {
+            $scope.retrieveMessages();
+            $scope.getContacts();
+        }
         $scope.retrieveMessages = function () {
             log("Sending request to sync messages");
             chatSocket.send("/app/sync/messages");
@@ -31,6 +36,11 @@ angular.module('springChat.controllers', ['toaster'])
 
             chatSocket.send(destination, {}, JSON.stringify({text: $scope.newMessage}));
             $scope.newMessage = '';
+        };
+
+        $scope.getContacts = function () {
+            log("Sending request to get contacts");
+            chatSocket.send("/app/contacts/get");
         };
 
         $scope.startTyping = function () {
@@ -128,20 +138,29 @@ angular.module('springChat.controllers', ['toaster'])
                     toaster.pop('error', "Error", message.body);
                 });
 
-                chatSocket.subscribe("/user/queue/sync.messages", function (message) {
-                    var messages = JSON.parse(message.body);
+                chatSocket.subscribe("/user/queue/sync/messages",
+                    function (message) {
+                        var messages = JSON.parse(message.body);
 
-                    log("sync result = " + messages);
+                        log("sync result = " + messages);
 
-                    var length = messages.length;
-                    for (var i = 0; i < length; i++) {
-                        log(messages[i]);
+                        var length = messages.length;
+                        for (var i = 0; i < length; i++) {
+                            log(messages[i]);
+                        }
+
+                        for (i = messages.length; i--;) {
+                            log("! " + messages[i]);
+                        }
                     }
+                );
 
-                    for (i = messages.length; i--;) {
-                        log("! " + messages[i]);
+                chatSocket.subscribe(
+                    "/user/queue/contacts/get",
+                    function(message) {
+                        console.log(message);
                     }
-                });
+                )
 
             }, function (error) {
                 toaster.pop('error', 'Error', 'Connection error ' + error);
