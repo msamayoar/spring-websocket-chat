@@ -12,9 +12,6 @@ import org.springframework.stereotype.Controller;
 import java.security.Principal;
 import java.util.Collection;
 
-/**
- * Created by Yurii on 2015-05-08.
- */
 @Controller
 public class SynchronizationController {
 

@@ -2,15 +2,12 @@ package com.tempest.moonlight.server.services;
 
 import com.tempest.moonlight.server.domain.User;
 import com.tempest.moonlight.server.exceptions.UserAlreadyExistsException;
-import com.tempest.moonlight.server.repository.persistance.dao.UserDAO;
-import com.tempest.moonlight.server.services.dto.RegistrationDTO;
+import com.tempest.moonlight.server.repository.persistence.dao.UserDAO;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.codec.Base64;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -28,6 +25,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserDAO userDAO;
 
+    private MessageDigest messageDigestInstance;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return null;
@@ -35,7 +34,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean checkUserExists(String login) {
-        return userDAO.exists(login);
+        return userDAO.existsWithKey(login);
     }
 
     @Override

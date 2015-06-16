@@ -1,8 +1,8 @@
 package com.tempest.moonlight.server.config;
 
-import com.tempest.moonlight.server.repository.persistance.dao.UserDAO;
+import com.tempest.moonlight.server.repository.persistence.dao.UserDAO;
 //import com.tempest.moonlight.server.security.CustomAuthenticationManager;
-import com.tempest.moonlight.server.repository.persistance.dao.UserMockDAOImpl;
+import com.tempest.moonlight.server.repository.persistence.dao.UserMockDAOImpl;
 import com.tempest.moonlight.server.security.CustomAuthenticationManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,45 +64,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return new CustomAuthenticationManager(/*userDAO()*/);
 	}
-
-
-
-	//	@Autowired
-//	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-//
-//		auth.authenticationProvider(new AuthenticationProvider() {
-//
-//			@Override
-//			public boolean supports(Class<?> authentication) {
-//				return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
-//			}
-//
-//			@Override
-//			public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-////				UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
-////
-////				List<GrantedAuthority> authorities = SECURE_ADMIN_PASSWORD.equals(token.getCredentials()) ?
-////						AuthorityUtils.createAuthorityList("ROLE_ADMIN") : null;
-////
-////
-////				return new UsernamePasswordAuthenticationToken(token.getName(), token.getCredentials(), authorities);
-//
-//				Assert.isTrue(!authentication.isAuthenticated(), "Already authenticated");
-//				String key = authentication.getPrincipal().toString();
-//				if (!StringUtils.hasText(key)) {
-//					throw new InternalAuthenticationServiceException("User key must not be empty.");
-//				}
-//				if (!userDAO.exists(key)) {
-//					throw new InternalAuthenticationServiceException("User does not exist in database.");
-//				}
-//				UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) authentication;
-//				UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-//						token.getPrincipal(),
-//						token.getPrincipal(),
-//						Arrays.asList(new SimpleGrantedAuthority("USER"))
-//				);
-//				return auth;
-//			}
-//		});
-//	}
 }

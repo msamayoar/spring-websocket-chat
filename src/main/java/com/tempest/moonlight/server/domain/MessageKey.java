@@ -29,7 +29,7 @@ public class MessageKey implements Serializable {
     }
 
     public MessageKey(ChatMessage chatMessage) {
-        this(chatMessage.getFrom(), chatMessage.getTo(), chatMessage.getTime(), chatMessage.getUdid());
+        this(chatMessage.getFrom(), chatMessage.getTo(), chatMessage.getTime(), chatMessage.getUuid());
     }
 
     @Override

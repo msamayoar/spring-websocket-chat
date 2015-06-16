@@ -1,0 +1,31 @@
+package com.tempest.moonlight.server.repository.persistence.dao;
+
+import com.tempest.moonlight.server.domain.ChatMessage;
+import com.tempest.moonlight.server.domain.MessageKey;
+import com.tempest.moonlight.server.util.StreamUtils;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/**
+ * Created by Yurii on 2015-05-08.
+ */
+@Repository
+public class MessageMockDAOImpl extends AbstractMockDAO<ChatMessage, MessageKey> implements MessageDAO {
+    @Override
+    public Collection<ChatMessage> getMessagesOfUser(String user) {
+        return StreamUtils.filterMap(getMap(), messagesOfUserPredicate(user));
+    }
+
+    private static Predicate<Map.Entry<MessageKey, ChatMessage>> messagesOfUserPredicate(String user) {
+        return entry -> {
+            MessageKey key = entry.getKey();
+            return user.equals(key.from) || user.equals(key.to) || StringUtils.isEmpty(key.to);
+        };
+    }
+}

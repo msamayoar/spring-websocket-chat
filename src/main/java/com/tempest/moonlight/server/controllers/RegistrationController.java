@@ -13,10 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-
-/**
- * Created by Yurii on 2015-05-08.
- */
 @RestController
 public class RegistrationController {
 

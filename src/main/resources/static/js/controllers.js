@@ -65,7 +65,10 @@ angular.module('springChat.controllers', ['toaster'])
                 $scope.username = frame.headers['user-name'];
 
                 chatSocket.subscribe("/app/chat.participants", function (message) {
-                    $scope.participants = JSON.parse(message.body);
+                    var logins = JSON.parse(message.body);
+                    for(var i = 0; i < logins.length; i++) {
+                        $scope.participants.unshift({username: logins[i], typing: false});
+                    }
                 });
 
                 chatSocket.subscribe("/topic/chat.login", function (message) {
@@ -97,7 +100,18 @@ angular.module('springChat.controllers', ['toaster'])
 
                 chatSocket.subscribe("/topic/presence", function (message) {
                     var presence = JSON.parse(message.body);
-                    console.log("Presence '" + presence.status + "' received from " + presence.user);
+                    var presenceStatus = presence.status;
+                    var login = presence.login;
+                    console.log("Presence '" + presenceStatus + "' received from '" + login + "'");
+                    if(presenceStatus == "offline") {
+                        for (var index in $scope.participants) {
+                            if ($scope.participants[index].username == login) {
+                                $scope.participants.splice(index, 1);
+                            }
+                        }
+                    } else if(presenceStatus == "online") {
+                        $scope.participants.unshift({username: presence.login, typing: false});
+                    }
                 });
 
                 chatSocket.subscribe("/topic/chat.message", function (message) {

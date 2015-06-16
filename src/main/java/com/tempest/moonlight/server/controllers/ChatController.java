@@ -6,6 +6,7 @@ import java.util.Collection;
 import com.tempest.moonlight.server.exceptions.InvalidUserLoginException;
 import com.tempest.moonlight.server.exceptions.MessageHandlingException;
 import com.tempest.moonlight.server.exceptions.UserDoesNotExistException;
+import com.tempest.moonlight.server.repository.persistence.dao.ActiveUsersDAO;
 import com.tempest.moonlight.server.services.MessageService;
 import com.tempest.moonlight.server.services.UserService;
 import org.apache.log4j.Logger;
@@ -25,32 +26,29 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.socket.config.WebSocketMessageBrokerStats;
 
 import com.tempest.moonlight.server.domain.ChatMessage;
-import com.tempest.moonlight.server.domain.SessionProfanity;
-import com.tempest.moonlight.server.event.LoginEvent;
-import com.tempest.moonlight.server.event.ParticipantRepository;
-import com.tempest.moonlight.server.util.ProfanityChecker;
+//import com.tempest.moonlight.server.domain.SessionProfanity;
+import com.tempest.moonlight.server.event.UserSession;
+//import com.tempest.moonlight.server.util.ProfanityChecker;
 
 import static com.tempest.moonlight.server.util.ChatMessageUtil.setUpMessage;
 
-/**
- * 
- * @author Sergi Almar
- */
 @Controller
 public class ChatController {
 	private static final Logger logger = Logger.getLogger(ChatController.class.getName());
 
-	@Autowired
-    private ProfanityChecker profanityFilter;
+//	@Autowired
+//    private ProfanityChecker profanityFilter;
 
-	@Autowired
-    private SessionProfanity profanity;
+//	@Autowired
+//    private SessionProfanity profanity;
 
 	@Autowired
     private WebSocketMessageBrokerStats stats;
 
 	@Autowired
-    private ParticipantRepository participantRepository;
+    private ActiveUsersDAO activeUsersDAO;
+//    private ParticipantRepository participantRepository;
+
 
 	@Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
@@ -62,13 +60,16 @@ public class ChatController {
     private UserService userService;
 	
 	@SubscribeMapping("/chat.participants")
-	public Collection<LoginEvent> retrieveParticipants() {
-		return participantRepository.getActiveSessions().values();
-	}
+	public Collection<String> retrieveParticipants(Principal principal) {
+//		return activeUsersDAO.getActiveSessions();
+        Collection<String> allActiveUsers = activeUsersDAO.getActiveUsers();
+        allActiveUsers.remove(principal.getName());
+        return allActiveUsers;
+    }
 	
 	@MessageMapping("/chat.message")
 	public ChatMessage filterMessage(Message message, @Payload ChatMessage chatMessage, Principal principal) {
-		checkProfanityAndSanitize(chatMessage);
+//		checkProfanityAndSanitize(chatMessage);
 
         messageService.saveMessage(setUpMessage(chatMessage, principal, null, message));
 		
@@ -77,28 +78,28 @@ public class ChatController {
 
 
 	
-	@MessageMapping("/chat.private.{username}")
-	public void filterPrivateMessage(Message message, @Payload ChatMessage chatMessage, @DestinationVariable("username") String username, Principal principal) {
-        if(!StringUtils.hasText(username)) {
-            throw new InvalidUserLoginException(username);
+	@MessageMapping("/chat.private.{login}")
+	public void filterPrivateMessage(Message message, @Payload ChatMessage chatMessage, @DestinationVariable("login") String login, Principal principal) {
+        if(!StringUtils.hasText(login)) {
+            throw new InvalidUserLoginException(login);
         }
 
-        if(!userService.checkUserExists(username)) {
-            throw new UserDoesNotExistException(username);
+        if(!userService.checkUserExists(login)) {
+            throw new UserDoesNotExistException(login);
         }
 
-        checkProfanityAndSanitize(chatMessage);
+//        checkProfanityAndSanitize(chatMessage);
 
-        messageService.saveMessage(setUpMessage(chatMessage, principal, username, message));
+        messageService.saveMessage(setUpMessage(chatMessage, principal, login, message));
 
-		simpMessagingTemplate.convertAndSend("/user/" + username + "/queue/chat.message", chatMessage);
+		simpMessagingTemplate.convertAndSend("/user/" + login + "/queue/chat.message", chatMessage);
 	}
 	
-	private void checkProfanityAndSanitize(ChatMessage message) {
-		long profanityLevel = profanityFilter.getMessageProfanity(message.getText());
-		profanity.increment(profanityLevel);
-		message.setText(profanityFilter.filter(message.getText()));
-	}
+//	private void checkProfanityAndSanitize(ChatMessage message) {
+//		long profanityLevel = profanityFilter.getMessageProfanity(message.getText());
+//		profanity.increment(profanityLevel);
+//		message.setText(profanityFilter.filter(message.getText()));
+//	}
 	
 	@MessageExceptionHandler
 	@SendToUser(value = "/queue/errors", broadcast = false)

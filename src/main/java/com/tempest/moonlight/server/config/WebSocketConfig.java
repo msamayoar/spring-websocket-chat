@@ -1,14 +1,10 @@
 package com.tempest.moonlight.server.config;
 
 import com.tempest.moonlight.server.websockets.CustomChannelInterceptor;
-import com.tempest.moonlight.server.websockets.CustomMessageHeadersAccessor;
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.messaging.support.ChannelInterceptorAdapter;
 import org.springframework.session.ExpiringSession;
 import org.springframework.session.web.socket.config.annotation.AbstractSessionWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;

@@ -1,7 +1,7 @@
 package com.tempest.moonlight.server.services;
 
 import com.tempest.moonlight.server.domain.ChatMessage;
-import com.tempest.moonlight.server.repository.persistance.dao.MessageDAO;
+import com.tempest.moonlight.server.repository.persistence.dao.MessageDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -28,5 +28,20 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public Collection<ChatMessage> getMessagesOfUser(String user) {
         return StringUtils.isEmpty(user) ? null : messageDAO.getMessagesOfUser(user);
+    }
+
+    @Override
+    public Collection<ChatMessage> getMessagesOfGroup(String group) {
+        return null;
+    }
+
+    @Override
+    public Collection<ChatMessage> getMessagesOfChannel(String channel) {
+        return null;
+    }
+
+    @Override
+    public void markMessageDelivered(ChatMessage chatMessage, boolean delivered) {
+
     }
 }

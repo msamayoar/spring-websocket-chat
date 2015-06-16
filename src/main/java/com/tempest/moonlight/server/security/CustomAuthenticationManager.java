@@ -1,7 +1,5 @@
 package com.tempest.moonlight.server.security;
 
-import com.tempest.moonlight.server.exceptions.InvalidUserLoginException;
-import com.tempest.moonlight.server.repository.persistance.dao.UserDAO;
 import com.tempest.moonlight.server.services.UserService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +35,7 @@ public class CustomAuthenticationManager implements AuthenticationManager {
         if (!StringUtils.hasText(key)) {
             throw new BadCredentialsException("User key must not be empty.");
         }
-//        if (!Optional.ofNullable(userDAO.exists(key)).isPresent()) {
+//        if (!Optional.ofNullable(userDAO.existsWithKey(key)).isPresent()) {
         if (!userService.checkUserExists(key)) {
             throw new UsernameNotFoundException("User does not exist in database.");
         }

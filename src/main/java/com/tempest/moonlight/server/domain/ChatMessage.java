@@ -1,6 +1,6 @@
 package com.tempest.moonlight.server.domain;
 
-import com.tempest.moonlight.server.repository.persistance.dao.IdentifiedEntity;
+import com.tempest.moonlight.server.repository.persistence.dao.IdentifiedEntity;
 
 import java.io.Serializable;
 
@@ -15,7 +15,7 @@ public class ChatMessage implements Serializable, IdentifiedEntity<MessageKey> {
     private String to;
 
     private long time;
-    private String udid;
+    private String uuid;
 
     private String subject;
     private String text;
@@ -23,17 +23,17 @@ public class ChatMessage implements Serializable, IdentifiedEntity<MessageKey> {
     public ChatMessage() {
     }
 
-    public ChatMessage(String from, String to, long time, String udid, String subject, String text) {
+    public ChatMessage(String from, String to, long time, String uuid, String subject, String text) {
         this.from = from;
         this.to = to;
         this.time = time;
-        this.udid = udid;
+        this.uuid = uuid;
         this.subject = subject;
         this.text = text;
     }
 
     public ChatMessage setUp(String from, String to, long time, String udid) {
-        return setFrom(from).setTo(to).setTime(time).setUdid(udid);
+        return setFrom(from).setTo(to).setTime(time).setUuid(udid);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class ChatMessage implements Serializable, IdentifiedEntity<MessageKey> {
                 "from='" + from + '\'' +
                 ", to='" + to + '\'' +
                 ", time=" + time +
-                ", udid='" + udid + '\'' +
+                ", uuid='" + uuid + '\'' +
                 ", subject='" + subject + '\'' +
                 ", text='" + text + '\'' +
                 '}';
@@ -99,12 +99,12 @@ public class ChatMessage implements Serializable, IdentifiedEntity<MessageKey> {
         return this;
     }
 
-    public String getUdid() {
-        return udid;
+    public String getUuid() {
+        return uuid;
     }
 
-    public ChatMessage setUdid(String udid) {
-        this.udid = udid;
+    public ChatMessage setUuid(String uuid) {
+        this.uuid = uuid;
         return this;
     }
 
