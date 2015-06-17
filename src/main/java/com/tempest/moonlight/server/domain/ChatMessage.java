@@ -1,6 +1,6 @@
 package com.tempest.moonlight.server.domain;
 
-import com.tempest.moonlight.server.repository.persistence.dao.IdentifiedEntity;
+import com.tempest.moonlight.server.repository.dao.IdentifiedEntity;
 
 import java.io.Serializable;
 

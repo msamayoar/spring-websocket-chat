@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  * Created by Yurii on 2015-06-11.
  */
 public class StreamUtils {
-    public static <Key, Value> Collection<Value> filterMap(Map<Key, Value> map, Predicate<Map.Entry<Key, Value>> predicate) {
+    public static <Key, Value> Collection<Value> filterMapValues(Map<Key, Value> map, Predicate<Map.Entry<Key, Value>> predicate) {
         return map.entrySet().parallelStream().filter(predicate).map(Map.Entry::getValue).collect(Collectors.toSet());
     }
 

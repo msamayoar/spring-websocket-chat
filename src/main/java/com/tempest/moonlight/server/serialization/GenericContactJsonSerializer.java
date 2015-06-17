@@ -16,7 +16,9 @@ public class GenericContactJsonSerializer extends JsonSerializer<GenericContact>
     public void serialize(GenericContact value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
         jgen.writeStartObject();
         jgen.writeNumberField("type", value.getType().getValue());
-        jgen.writeStringField("id", value.getId());
+        jgen.writeStringField("signature", value.getSignature());
+        jgen.writeStringField("owner", value.getSignature());
+        jgen.writeNumberField("ownerType", value.getType().getValue());
         jgen.writeEndObject();
     }
 }

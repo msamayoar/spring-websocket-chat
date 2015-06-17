@@ -1,13 +1,16 @@
 package com.tempest.moonlight.server.domain;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.tempest.moonlight.server.repository.dao.IdentifiedEntity;
 import com.tempest.moonlight.server.serialization.GenericContactJsonSerializer;
+
+import java.io.Serializable;
 
 /**
  * Created by Yurii on 2015-06-16.
  */
 @JsonSerialize(using = GenericContactJsonSerializer.class)
-public class GenericContact {
+public class GenericContact implements IdentifiedEntity<GenericContact>, Serializable {
     /**
      * Type of user's contact
      */
@@ -16,21 +19,29 @@ public class GenericContact {
     /**
      * Id of user's contact. It is a login - for user, groupId - for group
      */
-    private String id;
+    private String signature;
+
+    private ContactType ownerType;
+
+    private String owner;
 
     public GenericContact() {
     }
 
-    public GenericContact(ContactType type, String id) {
+    public GenericContact(ContactType type, String signature, ContactType ownerType, String owner) {
         this.type = type;
-        this.id = id;
+        this.signature = signature;
+        this.ownerType = ownerType;
+        this.owner = owner;
     }
 
     @Override
     public String toString() {
         return "GenericContact{" +
                 "type=" + type +
-                ", id='" + id + '\'' +
+                ", signature='" + signature + '\'' +
+                ", ownerType=" + ownerType +
+                ", owner='" + owner + '\'' +
                 '}';
     }
 
@@ -42,15 +53,20 @@ public class GenericContact {
         GenericContact that = (GenericContact) o;
 
         if (type != that.type) return false;
-        return !(id != null ? !id.equals(that.id) : that.id != null);
+        return !(signature != null ? !signature.equals(that.signature) : that.signature != null);
 
     }
 
     @Override
     public int hashCode() {
         int result = type != null ? type.hashCode() : 0;
-        result = 31 * result + (id != null ? id.hashCode() : 0);
+        result = 31 * result + (signature != null ? signature.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public GenericContact getKey() {
+        return this;
     }
 
     public ContactType getType() {
@@ -62,12 +78,30 @@ public class GenericContact {
         return this;
     }
 
-    public String getId() {
-        return id;
+    public String getSignature() {
+        return signature;
     }
 
-    public GenericContact setId(String id) {
-        this.id = id;
+    public GenericContact setSignature(String signature) {
+        this.signature = signature;
+        return this;
+    }
+
+    public ContactType getOwnerType() {
+        return ownerType;
+    }
+
+    public GenericContact setOwnerType(ContactType ownerType) {
+        this.ownerType = ownerType;
+        return this;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public GenericContact setOwner(String owner) {
+        this.owner = owner;
         return this;
     }
 }

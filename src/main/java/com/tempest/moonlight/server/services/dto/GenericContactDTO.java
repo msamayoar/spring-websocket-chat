@@ -20,7 +20,7 @@ public class GenericContactDTO implements ServerToClientDTO<GenericContact> {
     @Override
     public void fillWithEntity(GenericContact entity) {
         type =  entity.getType().getValue();
-        id = entity.getId();
+        id = entity.getSignature();
     }
 
     @Override

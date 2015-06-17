@@ -156,7 +156,7 @@ angular.module('springChat.controllers', ['toaster'])
                 );
 
                 chatSocket.subscribe(
-                    "/user/queue/contacts/get",
+                    "/user/queue/contacts/",
                     function(message) {
                         console.log(message);
                     }

@@ -2,7 +2,7 @@ package com.tempest.moonlight.server.services;
 
 import com.tempest.moonlight.server.domain.User;
 import com.tempest.moonlight.server.exceptions.UserAlreadyExistsException;
-import com.tempest.moonlight.server.repository.persistence.dao.UserDAO;
+import com.tempest.moonlight.server.repository.dao.UserDAO;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

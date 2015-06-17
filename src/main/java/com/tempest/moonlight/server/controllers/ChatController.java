@@ -6,7 +6,7 @@ import java.util.Collection;
 import com.tempest.moonlight.server.exceptions.InvalidUserLoginException;
 import com.tempest.moonlight.server.exceptions.MessageHandlingException;
 import com.tempest.moonlight.server.exceptions.UserDoesNotExistException;
-import com.tempest.moonlight.server.repository.persistence.dao.ActiveUsersDAO;
+import com.tempest.moonlight.server.repository.dao.ActiveUsersDAO;
 import com.tempest.moonlight.server.services.MessageService;
 import com.tempest.moonlight.server.services.UserService;
 import org.apache.log4j.Logger;
@@ -27,7 +27,6 @@ import org.springframework.web.socket.config.WebSocketMessageBrokerStats;
 
 import com.tempest.moonlight.server.domain.ChatMessage;
 //import com.tempest.moonlight.server.domain.SessionProfanity;
-import com.tempest.moonlight.server.event.UserSession;
 //import com.tempest.moonlight.server.util.ProfanityChecker;
 
 import static com.tempest.moonlight.server.util.ChatMessageUtil.setUpMessage;

@@ -1,13 +1,10 @@
-package com.tempest.moonlight.server.repository.persistence.dao;
+package com.tempest.moonlight.server.repository.dao;
 
 import com.tempest.moonlight.server.event.UserSession;
 import com.tempest.moonlight.server.util.StreamUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * Created by Yurii on 2015-06-10.

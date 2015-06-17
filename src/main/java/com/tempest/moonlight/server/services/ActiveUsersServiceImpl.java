@@ -1,7 +1,7 @@
 package com.tempest.moonlight.server.services;
 
 import com.tempest.moonlight.server.event.UserSession;
-import com.tempest.moonlight.server.repository.persistence.dao.ActiveUsersDAO;
+import com.tempest.moonlight.server.repository.dao.ActiveUsersDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

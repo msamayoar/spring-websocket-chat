@@ -1,4 +1,4 @@
-package com.tempest.moonlight.server.repository.persistence.dao;
+package com.tempest.moonlight.server.repository.dao;
 
 import com.tempest.moonlight.server.domain.User;
 import org.springframework.stereotype.Repository;
