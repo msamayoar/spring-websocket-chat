@@ -171,4 +171,3 @@ angular.module('springChat.controllers', ['toaster'])
 
         initStompClient();
     }]);
-	

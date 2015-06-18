@@ -1,0 +1,7 @@
+.ng-invalid {
+    border-color: red !important;
+}
+
+.ng-pristine {
+    border-color: inherit !important;
+}
