@@ -1,3 +1,5 @@
+html, body {height: 100%;}
+
 .container {
   width: 970px !important;
 }
@@ -13,3 +15,38 @@
 	height:400px;
 	overflow: auto;
 }
+
+.full-height {
+	height: 100%;
+}
+
+.full-width {
+	width: 100%;
+}
+
+.padding1em {
+	padding: 1em;
+}
+
+/*======== Overriding FLAT UI ========*/
+.login {
+	background-size: auto;
+	margin-bottom: 0px;
+	padding: 0px;
+	/*border: 1em solid #2c3e50;*/
+	/*border-radius: 1em;*/
+	background: #1abc9c none;
+	min-width: 480px;
+	min-height: 560px;
+}
+
+.login-screen {
+	background: none;
+	min-height: inherit;
+	padding: 2em 10%;
+}
+
+.login-form {
+	margin: 0 2em;
+}
+/*======== Overriding FLAT UI END ========*/
