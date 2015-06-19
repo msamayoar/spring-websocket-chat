@@ -18,7 +18,7 @@ public class ActiveUsersDAOImpl extends AbstractMockDAO<UserSession, UserSession
 
     @Override
     public Collection<String> getActiveUsers() {
-        return StreamUtils.convert(getActiveSessions(), UserSession::getLogin);
+        return StreamUtils.convertToSet(getActiveSessions(), UserSession::getLogin);
     }
 
 

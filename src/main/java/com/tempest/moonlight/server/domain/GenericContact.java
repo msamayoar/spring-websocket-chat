@@ -1,15 +1,22 @@
 package com.tempest.moonlight.server.domain;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.tempest.moonlight.server.repository.dao.IdentifiedEntity;
 import com.tempest.moonlight.server.serialization.GenericContactJsonSerializer;
+import com.tempest.moonlight.server.annotations.DTO;
+import com.tempest.moonlight.server.repository.dao.IdentifiedEntity;
+import com.tempest.moonlight.server.services.dto.EntityDTO;
+import com.tempest.moonlight.server.services.dto.GenericContactDTO;
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
 /**
  * Created by Yurii on 2015-06-16.
  */
-@JsonSerialize(using = GenericContactJsonSerializer.class)
+//@JsonSerialize(using = GenericContactJsonSerializer.class)
+@DTO(type = EntityDTO.DtoType.S2C, dto = GenericContactDTO.class)
+//@DTO(type = EntityDTO.DtoType.C2S, dto = GenericContactDTO.class)
+@Component
 public class GenericContact implements IdentifiedEntity<GenericContact>, Serializable {
     /**
      * Type of user's contact

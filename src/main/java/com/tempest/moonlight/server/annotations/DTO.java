@@ -1,7 +1,6 @@
 package com.tempest.moonlight.server.annotations;
 
-import com.tempest.moonlight.server.services.dto.DTOType;
-import com.tempest.moonlight.server.services.dto.EntityDTO;
+import com.tempest.moonlight.server.services.dto.*;
 
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
@@ -13,6 +12,7 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(DTOs.class)
 public @interface DTO {
-    DTOType type = DTOType.BiDir;
-    Class<? extends EntityDTO> dto = null;
+    EntityDTO.DtoType type();
+    Class<? extends EntityDTO> dto();
+
 }
