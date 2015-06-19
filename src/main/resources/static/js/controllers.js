@@ -3,7 +3,7 @@
 /* Controllers */
 
 angular.module('springChat.controllers', ['toaster'])
-    .controller('ChatController', ['$scope', '$location', '$interval', 'toaster', 'ChatSocket', function ($scope, $location, $interval, toaster, chatSocket) {
+    .controller('ChatController', ['$scope', '$location', '$interval', 'toaster', 'ChatSocket', 'Contacts', function ($scope, $location, $interval, toaster, chatSocket, contacts) {
 
         function log(smth) {
             console.log(smth);
@@ -17,10 +17,17 @@ angular.module('springChat.controllers', ['toaster'])
         $scope.messages = [];
         $scope.newMessage = '';
 
+        $scope.userContacts = contacts.get();
+
+        $scope.handleClc = function(){
+            console.log(contacts.get());
+        };
+
         $scope.doSmth = function () {
             $scope.retrieveMessages();
             $scope.getContacts();
-        }
+        };
+
         $scope.retrieveMessages = function () {
             log("Sending request to sync messages");
             chatSocket.send("/app/sync/messages");
@@ -159,6 +166,8 @@ angular.module('springChat.controllers', ['toaster'])
                     "/user/queue/contacts/",
                     function(message) {
                         console.log(message);
+                        contacts.parse(message);
+                        $scope.userContacts = contacts.get();
                     }
                 )
 
