@@ -16,7 +16,7 @@ public class TestDataController {
     @PostConstruct
     public void addTestData() {
         userService.registerUser("user1", "user1p");
-        userService.registerUser("user2", "user2p");
+        userService.registerUser("a", "1");
     }
 
 }

@@ -27,19 +27,32 @@
 		            </div><!-- /.navbar-collapse -->
 		          </nav><!-- /navbar -->
 			</div>
+			<div class="btn btn-success" href="#" ng-click="handleClc()">SHOW CONTACTS</div>
+			<div class="btn btn-success" href="#" ng-click="getContacts()">FETCH CONTACTS</div>
 	        <div class="row">
         		<div class="col-xs-4">
-        			<h4>Participants [{{participants.length}}]</h4>
+        			<!--<h4>Participants [{{participants.length}}]</h4>
         			<div class="share">
 	        			<ul ng-repeat="participant in participants">
 	        				<li>
 	        					<span class="input-icon fui-new" ng-show="participant.typing"></span>
 	        					<span class="input-icon fui-user" ng-show="!participant.typing"></span>
 	        					<a href="" ng-click="privateSending(participant.username)">{{participant.username}}</a>
-	        					
+
 	        				</li>
 	        			</ul>
-        			</div>
+        			</div>-->
+					<h4>Contacts [{{userContacts.length}}]</h4>
+					<div class="share">
+						<ul ng-repeat="contact in userContacts">
+							<li>
+								<span class="input-icon fui-new"></span>
+								<!--<span class="input-icon fui-user" ng-show="!participant.typing"></span>-->
+								<a href="" ng-click="privateSending(contact.id)">{{contact.id}}</a>
+
+							</li>
+						</ul>
+					</div>
         		</div>
         		<div class="col-xs-8 chat-box">
         			<h4>Messages</h4>
