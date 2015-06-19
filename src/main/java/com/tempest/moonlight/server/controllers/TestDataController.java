@@ -7,9 +7,6 @@ import org.springframework.stereotype.Controller;
 
 import javax.annotation.PostConstruct;
 
-/**
- * Created by Yurii on 2015-05-09.
- */
 @Controller
 public class TestDataController {
 
@@ -18,7 +15,7 @@ public class TestDataController {
 
     @PostConstruct
     public void addTestData() {
-        userService.registerUser("azaza", "azazap");
+        userService.registerUser("user1", "user1p");
         userService.registerUser("a", "1");
     }
 
