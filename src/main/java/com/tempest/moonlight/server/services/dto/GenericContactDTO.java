@@ -1,68 +1,69 @@
 package com.tempest.moonlight.server.services.dto;
 
-import com.tempest.moonlight.server.domain.GenericContact;
+import com.tempest.moonlight.server.domain.contacts.GenericContact;
 
 /**
  * Created by Yurii on 2015-06-16.
  */
 public class GenericContactDTO implements ServerToClientDTO<GenericContact> {
-    private int type;
-    private String signature;
-    private String owner;
+    private int contactType;
+    private String contactSignature;
+
     private int ownerType;
+    private String ownerSignature;
 
     public GenericContactDTO() {
     }
 
-    public GenericContactDTO(int type, String signature, String owner, int ownerType) {
-        this.type = type;
-        this.signature = signature;
-        this.owner = owner;
+    public GenericContactDTO(int contactType, String contactSignature, int ownerType, String ownerSignature) {
+        this.contactType = contactType;
+        this.contactSignature = contactSignature;
+        this.ownerSignature = ownerSignature;
         this.ownerType = ownerType;
     }
 
     @Override
     public void fillWithEntity(GenericContact genericContact) {
-        type =  genericContact.getType().getValue();
-        signature = '@' + genericContact.getSignature();
-        owner = '#' + genericContact.getOwner();
-        ownerType = genericContact.getOwnerType().getValue();
+        contactType =  genericContact.getContact().getType().getValue();
+        contactSignature = genericContact.getContact().getSignature();
+        ownerType = genericContact.getOwner().getType().getValue();
+        ownerSignature = genericContact.getOwner().getSignature();
     }
 
     @Override
     public String toString() {
         return "GenericContactDTO{" +
-                "type=" + type +
-                ", signature='" + signature + '\'' +
-                ", owner='" + owner + '\'' +
+                "contactType=" + contactType +
+                ", contactSignature='" + contactSignature + '\'' +
+                ", ownerSignature='" + ownerSignature + '\'' +
                 ", ownerType=" + ownerType +
                 '}';
     }
 
-    public int getType() {
-        return type;
+    public int getContactType() {
+        return contactType;
     }
 
-    public GenericContactDTO setType(int type) {
-        this.type = type;
+    public GenericContactDTO setContactType(int contactType) {
+        this.contactType = contactType;
         return this;
     }
 
-    public String getSignature() {
-        return signature;
+    public String getContactSignature() {
+        return contactSignature;
     }
 
-    public GenericContactDTO setSignature(String signature) {
-        this.signature = signature;
+    public GenericContactDTO setContactSignature(String contactSignature) {
+        this.contactSignature = contactSignature;
         return this;
     }
 
-    public String getOwner() {
-        return owner;
+    public String getOwnerSignature() {
+        return ownerSignature;
     }
 
-    public GenericContactDTO setOwner(String owner) {
-        this.owner = owner;
+    public GenericContactDTO setOwnerSignature(String ownerSignature) {
+        this.ownerSignature = ownerSignature;
         return this;
     }
 

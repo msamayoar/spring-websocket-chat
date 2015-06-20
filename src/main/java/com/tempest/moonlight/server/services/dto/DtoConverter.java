@@ -11,29 +11,59 @@ import java.util.Collection;
 public interface DtoConverter {
     void addDTO(Class entityClass, EntityDTO.DtoType dtoType, Class<? extends EntityDTO> dtoClass) throws DtoException;
 
-    <T> ServerToClientDTO<T> convertToOutgoing(T entity) throws DtoException;
+    <Entity> ServerToClientDTO<Entity> convertToDTO(Entity entity, Class<? extends ServerToClientDTO<Entity>> dtoClass) throws DtoException;
 
-    default <T> Collection<? extends ServerToClientDTO<T>> convertToOutgoing(Collection<T> entities) {
+    default <Entity> Collection<? extends ServerToClientDTO<Entity>> convertToDTOs(Collection<Entity> entities, Class<? extends ServerToClientDTO<Entity>> dtoClass) {
         return StreamUtils.convertToList(
                 entities,
                 entity -> {
                     try {
-                        return convertToOutgoing(entity);
+                        return convertToDTO(entity, dtoClass);
                     } catch (DtoException e) {
-                        throw new RuntimeException("Error while converting to DTOs", e);
+                        throw new RuntimeException("Error during converting to DTOs", e);
                     }
                 }
         );
     }
 
-    <T> T convertFromIncoming(ClientToServerDTO<T> dto) throws DtoException;
+    <Entity> Entity convertFromDTO(ClientToServerDTO<Entity> dto, Class<Entity> entityClass) throws DtoException;
 
-    default <T> Collection<T> convertFromIncoming(Collection<? extends ClientToServerDTO<T>> dtos) {
+    default <Entity> Collection<Entity> convertFromDTOs(Collection<ClientToServerDTO<Entity>> dtos, Class<Entity> entityClass) throws DtoException {
         return StreamUtils.convertToList(
                 dtos,
                 dto -> {
                     try {
-                        return convertFromIncoming(dto);
+                        return convertFromDTO(dto, entityClass);
+                    } catch (DtoException e) {
+                        throw new RuntimeException("Error while converting from DTO", e);
+                    }
+                }
+        );
+    }
+
+    <T> ServerToClientDTO<T> convertToDTO(T entity) throws DtoException;
+
+    default <T> Collection<? extends ServerToClientDTO<T>> convertToDTOs(Collection<T> entities)  {
+         return StreamUtils.convertToList(
+                 entities,
+                 entity -> {
+                     try {
+                         return convertToDTO(entity);
+                     } catch (DtoException e) {
+                         throw new RuntimeException("Error while converting to DTOs", e);
+                     }
+                 }
+         );
+     }
+
+    <T> T convertFromDTO(ClientToServerDTO<T> dto) throws DtoException;
+
+    default <T> Collection<T> convertFromDTO(Collection<? extends ClientToServerDTO<T>> dtos) {
+        return StreamUtils.convertToList(
+                dtos,
+                dto -> {
+                    try {
+                        return convertFromDTO(dto);
                     } catch (DtoException e) {
                         throw new RuntimeException("Error while converting from DTOs", e);
                     }

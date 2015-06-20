@@ -1,9 +1,11 @@
 package com.tempest.moonlight.server.services.dto;
 
+import com.tempest.moonlight.server.annotations.DTO;
 import com.tempest.moonlight.server.exceptions.local.dto.*;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +41,37 @@ public class DtoConverterImpl implements DtoConverter {
     }
 
     @Override
-    public <T> ServerToClientDTO<T> convertToOutgoing(T entity) throws DtoException {
+    public <Entity> ServerToClientDTO<Entity> convertToDTO(Entity entity, Class<? extends ServerToClientDTO<Entity>> dtoClass) throws DtoException {
+        return convertToDtoInternal(entity, dtoClass);
+    }
+
+    @Override
+    public <Entity> Entity convertFromDTO(ClientToServerDTO<Entity> dto, Class<Entity> entityClass) throws DtoException {
+        if(dto == null) {
+            return null;
+        }
+        try {
+            Entity entity = entityClass.newInstance();
+            dto.fillEntity(entity);
+            return entity;
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new CanNotCreateEntityException(entityClass, e);
+        }
+    }
+
+    private <Entity> ServerToClientDTO<Entity> convertToDtoInternal(Entity entity, Class<? extends ServerToClientDTO<Entity>> dtoClass) throws DtoException {
+        try {
+            ServerToClientDTO<Entity> serverToClientDTO = dtoClass.newInstance();
+            serverToClientDTO.fillWithEntity(entity);
+            return serverToClientDTO;
+
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new CanNotCreateDtoException(entity.getClass(), dtoClass, e);
+        }
+    }
+
+    @Override
+    public <T> ServerToClientDTO<T> convertToDTO(T entity) throws DtoException {
         if(entity == null) {
             return null;
         }
@@ -66,7 +98,7 @@ public class DtoConverterImpl implements DtoConverter {
     }
 
     @Override
-    public <T> T convertFromIncoming(ClientToServerDTO<T> dto) throws DtoException {
+    public <T> T convertFromDTO(ClientToServerDTO<T> dto) throws DtoException {
         if(dto == null) {
             return null;
         }

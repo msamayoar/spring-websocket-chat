@@ -1,6 +1,8 @@
 package com.tempest.moonlight.server.services;
 
-import com.tempest.moonlight.server.domain.GenericContact;
+import com.tempest.moonlight.server.domain.contacts.ContactRequest;
+import com.tempest.moonlight.server.domain.contacts.GenericContact;
+import com.tempest.moonlight.server.exceptions.contacts.ContactRequestException;
 
 import java.util.Collection;
 
@@ -9,6 +11,10 @@ import java.util.Collection;
  */
 public interface ContactsService {
     Collection<GenericContact> getContactsOfUser(String login);
+
+    boolean processContactRequest(ContactRequest contactRequest);
+    boolean processContactRequestResponse(ContactRequest contactRequest) throws ContactRequestException;
+
     boolean addContact(GenericContact genericContact);
     boolean removeContact(GenericContact genericContact);
 }

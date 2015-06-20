@@ -14,7 +14,7 @@ import java.util.function.Predicate;
  * Created by Yurii on 2015-05-08.
  */
 @Repository
-public class MessageMockDAOImpl extends AbstractMockDAO<ChatMessage, MessageKey> implements MessageDAO {
+public class MessageDAOMockImpl extends AbstractMockDAO<ChatMessage, MessageKey> implements MessageDAO {
     @Override
     public Collection<ChatMessage> getMessagesOfUser(String user) {
         return StreamUtils.filterMapValues(getMap(), messagesOfUserPredicate(user));

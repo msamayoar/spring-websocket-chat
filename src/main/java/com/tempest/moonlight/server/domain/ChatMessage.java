@@ -13,6 +13,7 @@ public class ChatMessage implements Serializable, IdentifiedEntity<MessageKey> {
 
     private String from;
     private String to;
+    private ParticipantType type;
 
     private long time;
     private String uuid;
@@ -23,17 +24,18 @@ public class ChatMessage implements Serializable, IdentifiedEntity<MessageKey> {
     public ChatMessage() {
     }
 
-    public ChatMessage(String from, String to, long time, String uuid, String subject, String text) {
+    public ChatMessage(String from, String to, ParticipantType type, long time, String uuid, String subject, String text) {
         this.from = from;
         this.to = to;
+        this.type = type;
         this.time = time;
         this.uuid = uuid;
         this.subject = subject;
         this.text = text;
     }
 
-    public ChatMessage setUp(String from, String to, long time, String udid) {
-        return setFrom(from).setTo(to).setTime(time).setUuid(udid);
+    public ChatMessage setUp(String from, String to, ParticipantType type, long time, String udid) {
+        return setFrom(from).setTo(to).setType(type).setTime(time).setUuid(udid);
     }
 
     @Override
@@ -44,7 +46,6 @@ public class ChatMessage implements Serializable, IdentifiedEntity<MessageKey> {
         ChatMessage chatMessage = (ChatMessage) o;
 
         return getKey().equals(chatMessage.getKey());
-
     }
 
     @Override
@@ -87,6 +88,15 @@ public class ChatMessage implements Serializable, IdentifiedEntity<MessageKey> {
 
     public ChatMessage setTo(String to) {
         this.to = to;
+        return this;
+    }
+
+    public ParticipantType getType() {
+        return type;
+    }
+
+    public ChatMessage setType(ParticipantType type) {
+        this.type = type;
         return this;
     }
 

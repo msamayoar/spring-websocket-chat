@@ -2,7 +2,7 @@ package com.tempest.moonlight.server.config;
 
 import com.tempest.moonlight.server.repository.dao.UserDAO;
 //import com.tempest.moonlight.server.security.CustomAuthenticationManager;
-import com.tempest.moonlight.server.repository.dao.UserMockDAOImpl;
+import com.tempest.moonlight.server.repository.dao.UserDAOMockImpl;
 import com.tempest.moonlight.server.security.CustomAuthenticationManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,7 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	protected UserDAO userDAO() {
-		return new UserMockDAOImpl();
+		return new UserDAOMockImpl();
 	}
 
 //	@Override

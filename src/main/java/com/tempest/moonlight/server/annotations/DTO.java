@@ -14,5 +14,4 @@ import java.lang.annotation.RetentionPolicy;
 public @interface DTO {
     EntityDTO.DtoType type();
     Class<? extends EntityDTO> dto();
-
 }

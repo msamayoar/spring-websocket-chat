@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.tempest.moonlight.server.domain.GenericContact;
+import com.tempest.moonlight.server.domain.contacts.GenericContact;
 
 import java.io.IOException;
 
@@ -15,10 +15,10 @@ public class GenericContactJsonSerializer extends JsonSerializer<GenericContact>
     @Override
     public void serialize(GenericContact value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
         jgen.writeStartObject();
-        jgen.writeNumberField("type", value.getType().getValue());
+        jgen.writeNumberField("type", value.getContactType().getValue());
         jgen.writeStringField("signature", value.getSignature());
         jgen.writeStringField("owner", value.getSignature());
-        jgen.writeNumberField("ownerType", value.getType().getValue());
+        jgen.writeNumberField("ownerType", value.getContactType().getValue());
         jgen.writeEndObject();
     }
 }
