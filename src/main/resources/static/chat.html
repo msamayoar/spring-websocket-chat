@@ -11,15 +11,15 @@
       
 	  <link href="css/chat.css" rel="stylesheet">	  
 	</head>
-	<body>
+	<body ng-controller="AppController">
 		
-		<div class="container" ng-controller="ChatController">
+		<div class="container">
 			<toaster-container></toaster-container>
 			
 			<div class="row">
 				<nav class="navbar navbar-inverse navbar-embossed" role="navigation">
 		            <div class="collapse navbar-collapse" id="navbar-collapse-01">
-		              <h1><a href="" ng-click="doSmth()">Spring WebSocket Chat</a></h1>
+		              <h1><a>Spring WebSocket Chat</a></h1>
 		              <ul class="nav navbar-nav navbar-right">           
 		              	<li><a href="stats" target="_blank">Stats</a></li>
 		                <li><a href="logout">Logout ({{username}})</a></li>
@@ -43,15 +43,16 @@
 					<h5>Contacts [{{userContacts.length}}]</h5>
 					<div class="share">
 						<ul class="user-contacts">
-							<li ng-repeat="contact in userContacts" class="contact" ng-class="{selected: contact.signature == selectedContact}">
+							<li ng-repeat="contact in userContacts" href="" ng-click="selectContact(contact.signature);"
+									class="contact" ng-class="{selected: contact.signature == selectedContact}">
 								<span class="input-icon fui-new"></span>
 								<span class="input-icon fui-user" ng-show="!participant.typing"></span>
-								<a class="name" href="" ng-click="selectContact(contact.signature);">{{contact.signature}}</a>
+								<span class="name">{{contact.signature}}</span>
 							</li>
 						</ul>
 					</div>
 				</div>
-        		<div class="col-xs-8 chat-box">
+        		<div class="col-xs-8 chat-box" ng-controller="ChatController">
 					<div class="row">
 						<h4>Messages</h4>
 						<div ng-repeat="message in messages">
@@ -77,9 +78,22 @@
 	    <script src="lib/stomp/lib/stomp.min.js"></script>
 		
 		<!-- App -->
-		<script src="js/app.js"></script>
-		<script src="js/controllers.js"></script>
-		<script src="js/services.js"></script>
+		<script src="js/app/app.js"></script>
+		<script src="js/app/appController.js"></script>
+		<script src="js/app/appEvents.js"></script>
+		<script src="js/app/initService.js"></script>
+		<script src="js/app/notificationService.js"></script>
+		<script src="js/app/paths.js"></script>
+		<script src="js/app/userService.js"></script>
+
+		<script src="js/chat/chatController.js"></script>
+		<script src="js/chat/chatService.js"></script>
+
+		<script src="js/contacts/contactsController.js"></script>
+		<script src="js/contacts/contactsService.js"></script>
+
+		<script src="js/socket/chatSocket.js"></script>
+
 		<script src="js/directives.js"></script>
 	</body>
 </html>
