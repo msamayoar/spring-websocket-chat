@@ -36,9 +36,8 @@ controllersModule.controller('ChatController', ['$scope', '$location', '$interva
         //chatSocket.send(destination, {}, JSON.stringify({text: $scope.newMessage}));
         //$scope.newMessage = '';
 
-        chat.sendMessage(
+        chat.sendPrivateMessage(
             "user2",
-            0,
             "SNAFU",
             $scope.newMessage
         )

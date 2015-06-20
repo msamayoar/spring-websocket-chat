@@ -253,8 +253,8 @@ servicesModule.factory('ChatService', ['$rootScope', 'EventConst', 'ChatSocket',
 		updateConversation: function(){ updateConversation(); },
 		updateUser: function () { updateUser(); },
 
-        sendMessage: function (recipient, recipientType, subject, text) {
-            sendPrivateMessage(recipient, recipientType, subject, text);
+        sendPrivateMessage: function (recipient, subject, text) {
+            sendPrivateMessage(recipient, subject, text);
         },
 
 		initSubscription: function () {

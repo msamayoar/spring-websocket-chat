@@ -35,8 +35,6 @@ import com.tempest.moonlight.server.domain.messages.ChatMessage;
 //import com.tempest.moonlight.server.domain.SessionProfanity;
 //import com.tempest.moonlight.server.util.ProfanityChecker;
 
-import static com.tempest.moonlight.server.util.ChatMessageUtil.setUpMessage;
-
 @Controller
 public class ChatController {
 	private static final Logger logger = Logger.getLogger(ChatController.class.getName());

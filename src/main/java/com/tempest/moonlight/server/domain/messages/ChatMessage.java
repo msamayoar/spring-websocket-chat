@@ -33,9 +33,11 @@ public class ChatMessage implements Serializable, IdentifiedEntity<MessageKey> {
     public ChatMessage() {
     }
 
+    /*
     public ChatMessage setUp(String from, String to, ParticipantType type, long time, String udid) {
         return setFrom(from).setTo(to).setType(type).setTime(time).setUuid(udid);
     }
+    */
 
     @Override
     public boolean equals(Object o) {
