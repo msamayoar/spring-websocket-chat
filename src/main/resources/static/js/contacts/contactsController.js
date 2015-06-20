@@ -3,16 +3,17 @@
  */
 'use strict';
 
-controllersModule.controller('ContactsController', ['$scope', '$timeout', 'ChatSocket', 'ContactsService', 'AppEvents', function ($scope, $timeout, chatSocket, contacts, appEvents) {
+controllersModule.controller('ContactsController', ['$scope', '$timeout', 'ContactsService', 'AppEvents', function ($scope, $timeout, contacts, appEvents) {
 
     $scope.userContacts = [];
-    $scope.selectedContact = "";
+    $scope.selectedContact = {};
 
     $scope.selectContact = function (contact) {
         $scope.selectedContact = contact;
+        contacts.selectContact(contact);
     };
 
-    $scope.$on(appEvents.CONTACTS_CHANGED, function () {
+    $scope.$on(appEvents.CONTACTS.CHANGED, function () {
         $timeout(function () {
             $scope.userContacts = contacts.get();
         })

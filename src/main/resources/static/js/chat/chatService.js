@@ -2,15 +2,10 @@
  * Created by Andrii on 20.06.2015.
  */
 'use strict';
-servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationService', 'Paths', function(appEvents, chatSocket, notification, paths) {
-    var user = {
-        username: ""
-    };
-
+servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationService', 'UserService', function(appEvents, chatSocket, notification, userService) {
     var conversation = {
         participants: [],
-        message: "",
-        messages: []
+        message: ""
     };
 
     var getPrefix = function () {
@@ -34,8 +29,7 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
         return packetId.prefix + "-" + packetId.id++;
     };
 
-    var updateConversation = function () { appEvents.fire(appEvents.CONVERSATION_CHANGED); };
-    var updateUser = function () { appEvents.fire(appEvents.USER_CHANGED); };
+    var notifyConversationUpdated = function () { appEvents.fire(appEvents.CHAT.CONVERSATION.CHANGED); };
 
     var sendGenericChatMessage = function(destination, recipient, recipientType, subject, text) {
         chatSocket.send(
@@ -43,7 +37,7 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
             {},
             JSON.stringify(
                 {
-                    from: user.username,
+                    from: userService.username(),
                     recipientType: recipientType,
                     recipient: recipient,
 
@@ -57,35 +51,12 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
     };
 
     var sendPrivateMessage = function(recipient, subject, text) {
-        sendGenericChatMessage(paths.CHAT.PRIVATE_SEND, recipient, 0, subject, text);
-    };
-
-    var confirmDeliveryStatus = function (from, recipientType, packetId, uuid, status) {
-        chatSocket.send(
-            paths.CHAT.DELIVERY_SEND,
-            {},
-            JSON.stringify(
-                {
-                    to: user.username,
-                    from: from,
-                    packetId: packetId,
-                    recipientType: recipientType,
-                    uuid: uuid,
-                    status: status
-                }
-            )
-        )
-    };
-
-    var confirmPrivateMessageDelivery = function(message) {
-        confirmDeliveryStatus(message.from, 0, message.packetId, message.uuid, 1);
+        sendGenericChatMessage(paths.CHAT.PRIVATE_SEND, recipient, appConst.RECIPIENT.TYPE.USER, subject, text);
     };
 
     return {
-        user: user,
         participants: conversation.participants,
-        messages: conversation.messages,
-        updateConversation: function(){ updateConversation(); },
+        notifyConversationUpdated: function(){ notifyConversationUpdated(); },
 
         sendMessage: function (recipient, recipientType, subject, text) {
             sendPrivateMessage(recipient, recipientType, subject, text);
@@ -102,7 +73,7 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
 
             chatSocket.subscribe("/topic/chat.typing", function (message) {
                 var parsed = JSON.parse(message.body);
-                if (parsed.username == user.username) return;
+                if (parsed.username == userService.username()) return;
 
                 for (var index in conversation.participants) {
                     var participant = conversation.participants[index];
@@ -111,7 +82,7 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
                         conversation.participants[index].typing = parsed.typing;
                     }
                 }
-                updateConversation();
+                notifyConversationUpdated();
             });
 
             chatSocket.subscribe(
@@ -130,41 +101,13 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
                     } else if (presenceStatus == "online") {
                         conversation.participants.unshift({username: presence.login, typing: false});
                     }
-                    updateConversation();
-                }
-            );
-
-            chatSocket.subscribe(
-                paths.CHAT.INCOMING_SUB,
-                function (messageStr) {
-                    var message = JSON.parse(messageStr.body);
-                    confirmPrivateMessageDelivery(message);
-                    message.priv = true;
-                    conversation.messages.unshift(message);
-                    updateConversation();
+                    notifyConversationUpdated();
                 }
             );
 
             chatSocket.subscribe("/user/queue/errors", function (message) {
                 notification.error(message.body);
             });
-
-            chatSocket.subscribe("/user/queue/sync/messages",
-                function (message) {
-                    var messages = JSON.parse(message.body);
-
-                    log("sync result = " + messages);
-
-                    var length = messages.length;
-                    for (var i = 0; i < length; i++) {
-                        log(messages[i]);
-                    }
-
-                    for (i = messages.length; i--;) {
-                        log("! " + messages[i]);
-                    }
-                }
-            );
         }
     }
 }]);

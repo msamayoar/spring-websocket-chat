@@ -8,7 +8,8 @@ servicesModule.factory('UserService', ['AppEvents', function(appEvents) {
     };
 
     return {
+        username: function () { return user.username; },
         user: user,
-        update: function () { appEvents.fire(appEvents.USER_CHANGED); }
+        notifyUpdated: function () { appEvents.fire(appEvents.USER.CHANGED); }
     }
 }]);

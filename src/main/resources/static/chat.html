@@ -43,8 +43,8 @@
 					<h5>Contacts [{{userContacts.length}}]</h5>
 					<div class="share">
 						<ul class="user-contacts">
-							<li ng-repeat="contact in userContacts" href="" ng-click="selectContact(contact.signature);"
-									class="contact" ng-class="{selected: contact.signature == selectedContact}">
+							<li ng-repeat="contact in userContacts" href="" ng-click="selectContact(contact);"
+									class="contact" ng-class="{selected: contact.signature == selectedContact.signature}">
 								<span class="input-icon fui-new"></span>
 								<span class="input-icon fui-user" ng-show="!participant.typing"></span>
 								<span class="name">{{contact.signature}}</span>
@@ -53,7 +53,7 @@
 					</div>
 				</div>
         		<div class="col-xs-8 chat-box" ng-controller="ChatController">
-					<div class="row">
+					<div class="row" ng-controller="MessagesController">
 						<h4>Messages</h4>
 						<div ng-repeat="message in messages">
 							<small print-message></small>
@@ -61,7 +61,7 @@
 					</div>
 					<div class="form-group message-input">
 						<!--<span><small>You will send this message to <strong>{{sendTo}}</strong> (click a participant name to send a private message)</small></span>-->
-						<span><small>You will send this message to <strong>{{selectedContact}}</strong> (click a participant name to send a private message)</small></span>
+						<span><small>You will send this message to <strong>{{selectedContact.signature}}</strong> (click a contact name to send a private message)</small></span>
 						<input id="newMessageInput" type="text" class="form-control" placeholder="Write your message and hit enter..." ng-model="newMessage" ng-keyup="$event.keyCode == 13 ? sendMessage() : startTyping()"/>
 					</div>
         		</div>
@@ -85,9 +85,12 @@
 		<script src="js/app/notificationService.js"></script>
 		<script src="js/app/paths.js"></script>
 		<script src="js/app/userService.js"></script>
+		<script src="js/app/constants.js"></script>
 
 		<script src="js/chat/chatController.js"></script>
 		<script src="js/chat/chatService.js"></script>
+		<script src="js/chat/messages/messagesService.js"></script>
+		<script src="js/chat/messages/messagesController.js"></script>
 
 		<script src="js/contacts/contactsController.js"></script>
 		<script src="js/contacts/contactsService.js"></script>

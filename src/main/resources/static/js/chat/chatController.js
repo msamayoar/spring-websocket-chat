@@ -1,30 +1,22 @@
 'use strict';
 
-controllersModule.controller('ChatController', ['$scope', '$location', '$interval', '$timeout', 'toaster', 'ChatSocket', 'AppEvents', 'ChatService', function ($scope, $location, $interval, $timeout, toaster, chatSocket, appEvents, chat) {
-
-    function log(smth) {
-        console.log(smth);
-    }
+controllersModule.controller('ChatController', ['$scope', '$location', '$interval', '$timeout', 'toaster', 'ChatSocket', 'AppEvents', 'ChatService', 'ContactsService', function ($scope, $location, $interval, $timeout, toaster, chatSocket, appEvents, chat, contacts) {
 
     var typing = undefined;
 
-    //$scope.username = '';
     $scope.sendTo = 'everyone';
     $scope.participants = [];
-    $scope.messages = [];
     $scope.newMessage = '';
 
-    $scope.retrieveMessages = function () {
-        log("Sending request to sync messages");
-        chatSocket.send("/app/sync/messages");
-    };
+    $scope.selectedContact = {};
 
     $scope.sendMessage = function () {
         chat.sendMessage(
-            "user2",
+            $scope.selectedContact.signature,
             "SNAFU",
             $scope.newMessage
-        )
+        );
+        $scope.newMessage = "";
     };
 
     $scope.startTyping = function () {
@@ -51,10 +43,15 @@ controllersModule.controller('ChatController', ['$scope', '$location', '$interva
         $scope.sendTo = (username != $scope.sendTo) ? username : 'everyone';
     };
 
-    $scope.$on(appEvents.CONVERSATION_CHANGED, function () {
+    $scope.$on(appEvents.CONTACTS.SELECTED, function () {
+        $timeout(function () {
+            $scope.selectedContact = contacts.selected();
+        })
+    });
+
+    $scope.$on(appEvents.CHAT.CONVERSATION.CHANGED, function () {
         $timeout(function () {
             $scope.participants = chat.participants;
-            $scope.messages = chat.messages;
         })
     });
 }]);

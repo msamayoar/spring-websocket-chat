@@ -8,7 +8,7 @@ controllersModule.controller('AppController', ['$scope', '$timeout', 'AppEvents'
 
     $scope.username = '';
 
-    $scope.$on(appEvents.USER_CHANGED, function () {
+    $scope.$on(appEvents.USER.CHANGED, function () {
         $timeout(function () {
             $scope.username = userService.user.username;
         })

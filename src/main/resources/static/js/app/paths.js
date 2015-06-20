@@ -1,7 +1,7 @@
 /**
  * Created by Andrii on 20.06.2015.
  */
-servicesModule.factory('Paths', function() {
+var paths = (function () {
     var APP = "/app/";
     var USER_QUEUE = "/user/queue/";
 
@@ -41,4 +41,4 @@ servicesModule.factory('Paths', function() {
             PRESENCE_SEND: send("presence")
         }
     };
-});
+}());

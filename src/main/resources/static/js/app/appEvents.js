@@ -4,9 +4,21 @@
 'use strict';
 servicesModule.factory('AppEvents', ['$rootScope', function($rootScope){
     return {
-        CONVERSATION_CHANGED: "conversationChanged",
-        USER_CHANGED: "userChanged",
-        CONTACTS_CHANGED: "contactsChanged",
+        CHAT: {
+            CONVERSATION: {
+                CHANGED: "conversationChanged"
+            },
+            MESSAGES: {
+                CHANGED: "messagesChanged"
+            }
+        },
+        USER: {
+            CHANGED: "userChanged"
+        },
+        CONTACTS: {
+            CHANGED: "contactsChanged",
+            SELECTED: "contactSelected"
+        },
         fire: function (event) {
             $rootScope.$broadcast(event);
         }
