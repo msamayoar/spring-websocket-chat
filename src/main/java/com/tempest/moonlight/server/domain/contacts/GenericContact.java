@@ -12,7 +12,6 @@ import java.io.Serializable;
 /**
  * Created by Yurii on 2015-06-16.
  */
-//@JsonSerialize(using = GenericContactJsonSerializer.class)
 @DTO(type = EntityDTO.DtoType.S2C, dto = GenericContactDTO.class)
 //@DTO(type = EntityDTO.DtoType.C2S, dto = GenericContactDTO.class)
 @Component
