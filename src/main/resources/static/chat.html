@@ -27,9 +27,7 @@
 		            </div><!-- /.navbar-collapse -->
 		          </nav><!-- /navbar -->
 			</div>
-			<div class="btn btn-success" href="#" ng-click="handleClc()">SHOW CONTACTS</div>
-			<div class="btn btn-success" href="#" ng-click="getContacts()">FETCH CONTACTS</div>
-	        <div class="row">
+	        <div class="row" ng-controller="ContactsController">
         		<div class="col-xs-4">
         			<!--<h4>Participants [{{participants.length}}]</h4>
         			<div class="share">
@@ -42,14 +40,13 @@
 	        				</li>
 	        			</ul>
         			</div>-->
-					<h4>Contacts [{{userContacts.length}}]</h4>
+					<h5>Contacts [{{userContacts.length}}]</h5>
 					<div class="share">
-						<ul ng-repeat="contact in userContacts">
-							<li>
+						<ul class="user-contacts">
+							<li ng-repeat="contact in userContacts" class="contact" ng-class="{selected: contact.id == selectedContact}">
 								<span class="input-icon fui-new"></span>
-								<!--<span class="input-icon fui-user" ng-show="!participant.typing"></span>-->
-								<a href="" ng-click="privateSending(contact.id)">{{contact.id}}</a>
-
+								<span class="input-icon fui-user" ng-show="!participant.typing"></span>
+								<a class="name" href="" ng-click="selectContact(contact.id)">{{contact.id}}</a>
 							</li>
 						</ul>
 					</div>

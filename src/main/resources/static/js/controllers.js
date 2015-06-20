@@ -2,181 +2,103 @@
 
 /* Controllers */
 
-angular.module('springChat.controllers', ['toaster'])
-    .controller('ChatController', ['$scope', '$location', '$interval', 'toaster', 'ChatSocket', 'Contacts', function ($scope, $location, $interval, toaster, chatSocket, contacts) {
+var controllersModule = angular.module('springChat.controllers', ['toaster']);
 
-        function log(smth) {
-            console.log(smth);
+controllersModule.controller('ChatController', ['$scope', '$location', '$interval', '$timeout', 'toaster', 'ChatSocket', 'EventConst', 'ChatService', 'SocketService', function ($scope, $location, $interval, $timeout, toaster, chatSocket, eventConst, chat, socketService) {
+
+    socketService.init();
+
+    function log(smth) {
+        console.log(smth);
+    }
+
+    var typing = undefined;
+
+    $scope.username = '';
+    $scope.sendTo = 'everyone';
+    $scope.participants = [];
+    $scope.messages = [];
+    $scope.newMessage = '';
+
+    $scope.retrieveMessages = function () {
+        log("Sending request to sync messages");
+        chatSocket.send("/app/sync/messages");
+    };
+
+    $scope.sendMessage = function () {
+        var destination = "/app/chat.message";
+
+        if ($scope.sendTo != "everyone") {
+            destination = "/app/chat.private." + $scope.sendTo;
+            $scope.messages.unshift({text: $scope.newMessage, from: 'you', priv: true, to: $scope.sendTo});
         }
 
-        var typing = undefined;
-
-        $scope.username = '';
-        $scope.sendTo = 'everyone';
-        $scope.participants = [];
-        $scope.messages = [];
+        chatSocket.send(destination, {}, JSON.stringify({text: $scope.newMessage}));
         $scope.newMessage = '';
+    };
 
-        $scope.userContacts = contacts.get();
+    $scope.startTyping = function () {
+        // Don't send notification if we are still typing or we are typing a private message
+        if (angular.isDefined(typing) || $scope.sendTo != "everyone") return;
 
-        $scope.handleClc = function(){
-            console.log(contacts.get());
-        };
+        typing = $interval(function () {
+            $scope.stopTyping();
+        }, 500);
 
-        $scope.doSmth = function () {
-            $scope.retrieveMessages();
-            $scope.getContacts();
-        };
+        chatSocket.send("/topic/chat.typing", {}, JSON.stringify({username: $scope.username, typing: true}));
+    };
 
-        $scope.retrieveMessages = function () {
-            log("Sending request to sync messages");
-            chatSocket.send("/app/sync/messages");
-        };
+    $scope.stopTyping = function () {
+        if (angular.isDefined(typing)) {
+            $interval.cancel(typing);
+            typing = undefined;
 
-        $scope.sendMessage = function () {
-            var destination = "/app/chat.message";
+            chatSocket.send("/topic/chat.typing", {}, JSON.stringify({username: $scope.username, typing: false}));
+        }
+    };
 
-            if ($scope.sendTo != "everyone") {
-                destination = "/app/chat.private." + $scope.sendTo;
-                $scope.messages.unshift({text: $scope.newMessage, from: 'you', priv: true, to: $scope.sendTo});
-            }
+    $scope.privateSending = function (username) {
+        $scope.sendTo = (username != $scope.sendTo) ? username : 'everyone';
+    };
 
-            chatSocket.send(destination, {}, JSON.stringify({text: $scope.newMessage}));
-            $scope.newMessage = '';
-        };
+    $scope.$on(eventConst.USER_CHANGED, function () {
+        $timeout(function () {
+            $scope.username = chat.user.username;
+        })
+    });
 
-        $scope.getContacts = function () {
-            log("Sending request to get contacts");
-            chatSocket.send("/app/contacts/get");
-        };
+    $scope.$on(eventConst.CONVERSATION_CHANGED, function () {
+        $timeout(function () {
+            $scope.participants = chat.participants;
+            $scope.messages = chat.messages;
+        })
+    });
+}]);
 
-        $scope.startTyping = function () {
-            // Don't send notification if we are still typing or we are typing a private message
-            if (angular.isDefined(typing) || $scope.sendTo != "everyone") return;
+controllersModule.controller('ContactsController', ['$scope', '$timeout', 'ChatSocket', 'ContactsService', 'EventConst', function ($scope, $timeout, chatSocket, contacts, eventConst) {
 
-            typing = $interval(function () {
-                $scope.stopTyping();
-            }, 500);
+    $scope.userContacts = contacts.get();
+    $scope.selectedContact = -1;
 
-            chatSocket.send("/topic/chat.typing", {}, JSON.stringify({username: $scope.username, typing: true}));
-        };
+    $scope.handleClc = function(){
+        console.log(contacts.get());
+    };
 
-        $scope.stopTyping = function () {
-            if (angular.isDefined(typing)) {
-                $interval.cancel(typing);
-                typing = undefined;
+    $scope.fetchContacts = function(){
+        contacts.fetch();
+    };
 
-                chatSocket.send("/topic/chat.typing", {}, JSON.stringify({username: $scope.username, typing: false}));
-            }
-        };
+    $scope.selectContact = function (contactId) {
+        debugger;
+        $scope.selectedContact = contactId;
+    };
 
-        $scope.privateSending = function (username) {
-            $scope.sendTo = (username != $scope.sendTo) ? username : 'everyone';
-        };
+    $scope.$on(eventConst.CONTACTS_CHANGED, function () {
+        $timeout(function () {
+            $scope.userContacts = contacts.get();
+        })
+    });
 
-        var initStompClient = function () {
-            chatSocket.init('/ws');
+}]);
 
-            chatSocket.connect(function (frame) {
 
-                $scope.username = frame.headers['user-name'];
-
-                chatSocket.subscribe("/app/chat.participants", function (message) {
-                    var logins = JSON.parse(message.body);
-                    for(var i = 0; i < logins.length; i++) {
-                        $scope.participants.unshift({username: logins[i], typing: false});
-                    }
-                });
-
-                chatSocket.subscribe("/topic/chat.login", function (message) {
-                    console.log("in subscribe callback on /topic/chat.login");
-                    $scope.participants.unshift({username: JSON.parse(message.body).username, typing: false});
-                });
-
-                chatSocket.subscribe("/topic/chat.logout", function (message) {
-                    var username = JSON.parse(message.body).username;
-                    for (var index in $scope.participants) {
-                        if ($scope.participants[index].username == username) {
-                            $scope.participants.splice(index, 1);
-                        }
-                    }
-                });
-
-                chatSocket.subscribe("/topic/chat.typing", function (message) {
-                    var parsed = JSON.parse(message.body);
-                    if (parsed.username == $scope.username) return;
-
-                    for (var index in $scope.participants) {
-                        var participant = $scope.participants[index];
-
-                        if (participant.username == parsed.username) {
-                            $scope.participants[index].typing = parsed.typing;
-                        }
-                    }
-                });
-
-                chatSocket.subscribe("/topic/presence", function (message) {
-                    var presence = JSON.parse(message.body);
-                    var presenceStatus = presence.status;
-                    var login = presence.login;
-                    console.log("Presence '" + presenceStatus + "' received from '" + login + "'");
-                    if(presenceStatus == "offline") {
-                        for (var index in $scope.participants) {
-                            if ($scope.participants[index].username == login) {
-                                $scope.participants.splice(index, 1);
-                            }
-                        }
-                    } else if(presenceStatus == "online") {
-                        $scope.participants.unshift({username: presence.login, typing: false});
-                    }
-                });
-
-                chatSocket.subscribe("/topic/chat.message", function (message) {
-                    $scope.messages.unshift(JSON.parse(message.body));
-                });
-
-                chatSocket.subscribe("/user/queue/chat.message", function (message) {
-                    var parsed = JSON.parse(message.body);
-                    parsed.priv = true;
-                    $scope.messages.unshift(parsed);
-                });
-
-                chatSocket.subscribe("/user/queue/errors", function (message) {
-                    toaster.pop('error', "Error", message.body);
-                });
-
-                chatSocket.subscribe("/user/queue/sync/messages",
-                    function (message) {
-                        var messages = JSON.parse(message.body);
-
-                        log("sync result = " + messages);
-
-                        var length = messages.length;
-                        for (var i = 0; i < length; i++) {
-                            log(messages[i]);
-                        }
-
-                        for (i = messages.length; i--;) {
-                            log("! " + messages[i]);
-                        }
-                    }
-                );
-
-                chatSocket.subscribe(
-                    "/user/queue/contacts/",
-                    function(message) {
-                        debugger;
-                        console.log(message);
-                        contacts.parse(message);
-                        $scope.userContacts = contacts.get();
-                    }
-                )
-
-            }, function (error) {
-                toaster.pop('error', 'Error', 'Connection error ' + error);
-
-            });
-        };
-
-        initStompClient();
-    }]);

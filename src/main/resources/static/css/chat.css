@@ -49,4 +49,21 @@ html, body {height: 100%;}
 .login-form {
 	margin: 0 2em;
 }
+
+ul.user-contacts {
+	padding: 0px;
+}
+
+.user-contacts .contact, .user-contacts li:first-child {
+	padding: 1em;
+	cursor: pointer;
+}
+
+.user-contacts .contact .name {
+	font-weight: bold;
+}
+
+.user-contacts .selected {
+	background-color: red;
+}
 /*======== Overriding FLAT UI END ========*/
