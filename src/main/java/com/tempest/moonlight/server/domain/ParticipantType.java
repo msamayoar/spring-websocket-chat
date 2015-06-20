@@ -30,10 +30,6 @@ public enum ParticipantType implements HasValue<Integer> {
     }
 
     public static ParticipantType getByValue(int value) {
-        ParticipantType type = MAP.get(value);
-        if(type == null) {
-            throw new IllegalArgumentException("No appropriate type for value = " + value);
-        }
-        return type;
+        return MAP.get(value);
     }
 }

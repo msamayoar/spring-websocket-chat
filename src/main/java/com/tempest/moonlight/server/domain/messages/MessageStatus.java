@@ -33,10 +33,6 @@ public enum MessageStatus implements HasIntValue {
     }
 
     public static MessageStatus getByValue(int value) {
-        MessageStatus status = MAP.get(value);
-        if(status == null) {
-            throw new IllegalArgumentException("Unknown status value = " + value);
-        }
-        return status;
+        return MAP.get(value);
     }
 }

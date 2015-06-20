@@ -7,6 +7,6 @@ import com.tempest.moonlight.server.domain.contacts.ContactRequest;
  */
 public class IllegalContactRequestResponseStatusException extends ContactRequestException {
     public IllegalContactRequestResponseStatusException(ContactRequest.Status responseStatus) {
-        super("Illegal response status = " + responseStatus + ". Only " + ContactRequest.Status.APPROVED + " and " + ContactRequest.Status.REJECTED + " allowed");
+        super("Illegal response status = " + responseStatus + ". Only [" + ContactRequest.Status.APPROVED + ", " + ContactRequest.Status.REJECTED + "] are allowed");
     }
 }

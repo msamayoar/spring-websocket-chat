@@ -46,6 +46,20 @@ public class ChatMessageDTO implements BiDirectionalDTO<ChatMessage> {
         text = chatMessage.getText();
     }
 
+    @Override
+    public String toString() {
+        return "ChatMessageDTO{" +
+                "from='" + from + '\'' +
+                ", recipientType=" + recipientType +
+                ", recipient='" + recipient + '\'' +
+                ", time=" + time +
+                ", uuid='" + uuid + '\'' +
+                ", packetId='" + packetId + '\'' +
+                ", subject='" + subject + '\'' +
+                ", text='" + text + '\'' +
+                '}';
+    }
+
     public String getFrom() {
         return from;
     }

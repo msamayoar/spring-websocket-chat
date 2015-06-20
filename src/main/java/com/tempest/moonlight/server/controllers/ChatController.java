@@ -47,9 +47,6 @@ public class ChatController {
 	@Autowired
     private ActiveUsersDAO activeUsersDAO;
 
-	@Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
-
     @Autowired
     private ToParticipantSender toParticipantSender;
 
@@ -86,11 +83,7 @@ public class ChatController {
 
         chatMessage = onUserPrivateMessageInner(chatMessage, message);
 
-        toParticipantSender.sendToUserQueue(
-                chatMessage.getFrom(),
-                "messages/delivery",
-                new MessageDeliveryStatus(chatMessage, MessageStatus.ARRIVED)
-        );
+        sendDeliveryStatus(chatMessage.getFrom(), new MessageDeliveryStatus(chatMessage, MessageStatus.ARRIVED));
         toParticipantSender.sendToUserQueue(
                 chatMessage.getRecipient().getSignature(),
                 "chat/incoming",
@@ -138,8 +131,16 @@ public class ChatController {
         return chatMessage;
     }
 
+    @MessageMapping("messages/delivery")
     public void onMessagedeliveryStatus(Principal principal, MessageDeliveryStatus deliveryStatus) throws MessageHandlingException {
+        deliveryStatus.setTo(principal.getName());
+        messageService.updateMessageDeliveryStatus(deliveryStatus);
 
+        sendDeliveryStatus(deliveryStatus.getFrom(), deliveryStatus);
+    }
+
+    private void sendDeliveryStatus(String to, MessageDeliveryStatus deliveryStatus) {
+        toParticipantSender.sendToUserQueue(to, "messages/delivery", deliveryStatus);
     }
 
 //    @MessageMapping("/chat.message")

@@ -33,7 +33,7 @@ servicesModule.factory('Paths', function() {
             PRIVATE_SEND: send("chat/private"),
             DELIVERY_SUB: sub("messages/delivery"),
             DELIVERY_SEND: send("messages/delivery"),
-            INCOMING_SUB: sub("chat/incoming/")
+            INCOMING_SUB: sub("chat/incoming")
         },
         CONTACTS: {
             GET_SEND: send("contacts/get"),
@@ -225,13 +225,16 @@ servicesModule.factory('ChatService', ['$rootScope', 'EventConst', 'ChatSocket',
         sendGenericChatMessage(paths.CHAT.PRIVATE_SEND, recipient, 0, subject, text);
     };
 
-    var confirmDeliveryStatus = function (packetId, uuid, status) {
+    var confirmDeliveryStatus = function (from, recipientType, packetId, uuid, status) {
         chatSocket.send(
             paths.CHAT.DELIVERY_SEND,
             {},
             JSON.stringify(
                 {
+                    to: user.username,
+                    from: from,
                     packetId: packetId,
+                    recipientType: recipientType,
                     uuid: uuid,
                     status: status
                 }
@@ -239,8 +242,8 @@ servicesModule.factory('ChatService', ['$rootScope', 'EventConst', 'ChatSocket',
         )
     };
 
-    var confirmDelivery = function(message) {
-        confirmDeliveryStatus(message.packetId, message.uuid, 1);
+    var confirmPrivateMessageDelivery = function(message) {
+        confirmDeliveryStatus(message.from, 0, message.packetId, message.uuid, 1);
     };
 
 	return {
@@ -259,7 +262,8 @@ servicesModule.factory('ChatService', ['$rootScope', 'EventConst', 'ChatSocket',
             chatSocket.subscribe(
                 paths.CHAT.DELIVERY_SUB,
                 function(deliveryStatus) {
-                    console.log(JSON.parse(deliveryStatus));
+                    debugger;
+                    console.log(JSON.parse(deliveryStatus.body));
                 }
             );
 
@@ -336,7 +340,7 @@ servicesModule.factory('ChatService', ['$rootScope', 'EventConst', 'ChatSocket',
                 paths.CHAT.INCOMING_SUB,
                 function (messageStr) {
                     var message = JSON.parse(messageStr.body);
-                    confirmDelivery(message);
+                    confirmPrivateMessageDelivery(message);
                     message.priv = true;
                     conversation.messages.unshift(message);
                     updateConversation();

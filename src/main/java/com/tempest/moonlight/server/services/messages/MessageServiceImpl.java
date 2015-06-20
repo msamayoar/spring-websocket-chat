@@ -4,6 +4,7 @@ import com.tempest.moonlight.server.domain.MessageKey;
 import com.tempest.moonlight.server.domain.messages.ChatMessage;
 import com.tempest.moonlight.server.domain.messages.MessageDeliveryStatus;
 import com.tempest.moonlight.server.domain.messages.MessageStatus;
+import com.tempest.moonlight.server.exceptions.chat.IllegalMessageDeliveryStatusException;
 import com.tempest.moonlight.server.exceptions.chat.MessageDoesNotExistsException;
 import com.tempest.moonlight.server.exceptions.chat.MessageHandlingException;
 import com.tempest.moonlight.server.repository.dao.MessageDAO;
@@ -58,6 +59,11 @@ public class MessageServiceImpl implements MessageService {
         }
 
         ChatMessage chatMessage = messageDAO.get(messageKey);
-        chatMessage.setStatus(MessageStatus.getByValue(deliveryStatus.getStatus()));
+        MessageStatus status = MessageStatus.getByValue(deliveryStatus.getStatus());
+        if(!(status == MessageStatus.DELIVERED || status == MessageStatus.READ)) {
+            throw new IllegalMessageDeliveryStatusException(status);
+        }
+        //TODO check if user downgrades status!
+        chatMessage.setStatus(status);
     }
 }
