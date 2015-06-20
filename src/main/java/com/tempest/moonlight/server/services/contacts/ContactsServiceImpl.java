@@ -1,4 +1,4 @@
-package com.tempest.moonlight.server.services;
+package com.tempest.moonlight.server.services.contacts;
 
 import com.tempest.moonlight.server.domain.ParticipantType;
 import com.tempest.moonlight.server.domain.contacts.ContactRequest;

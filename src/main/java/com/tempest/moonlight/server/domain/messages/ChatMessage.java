@@ -1,37 +1,34 @@
-package com.tempest.moonlight.server.domain;
+package com.tempest.moonlight.server.domain.messages;
 
+import com.tempest.moonlight.server.annotations.DTO;
+import com.tempest.moonlight.server.domain.MessageKey;
+import com.tempest.moonlight.server.domain.ParticipantType;
+import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
 import com.tempest.moonlight.server.repository.dao.IdentifiedEntity;
+import com.tempest.moonlight.server.services.dto.EntityDTO;
+import com.tempest.moonlight.server.services.dto.messages.ChatMessageDTO;
 
 import java.io.Serializable;
 
 /**
  * Created by Yurii on 4/21/2015.
  */
+@DTO(type = EntityDTO.DtoType.BiDir, dto = ChatMessageDTO.class)
 public class ChatMessage implements Serializable, IdentifiedEntity<MessageKey> {
 
     private transient MessageKey key;
 
     private String from;
-    private String to;
-    private ParticipantType type;
+    private GenericParticipant recipient;
 
     private long time;
     private String uuid;
+    private String packetId;
 
     private String subject;
     private String text;
 
     public ChatMessage() {
-    }
-
-    public ChatMessage(String from, String to, ParticipantType type, long time, String uuid, String subject, String text) {
-        this.from = from;
-        this.to = to;
-        this.type = type;
-        this.time = time;
-        this.uuid = uuid;
-        this.subject = subject;
-        this.text = text;
     }
 
     public ChatMessage setUp(String from, String to, ParticipantType type, long time, String udid) {
@@ -55,9 +52,10 @@ public class ChatMessage implements Serializable, IdentifiedEntity<MessageKey> {
 
     @Override
     public String toString() {
-        return "Message{" +
-                "from='" + from + '\'' +
-                ", to='" + to + '\'' +
+        return "ChatMessage{" +
+                "key=" + key +
+                ", from='" + from + '\'' +
+                ", recipient=" + recipient +
                 ", time=" + time +
                 ", uuid='" + uuid + '\'' +
                 ", subject='" + subject + '\'' +
@@ -82,21 +80,29 @@ public class ChatMessage implements Serializable, IdentifiedEntity<MessageKey> {
         return this;
     }
 
-    public String getTo() {
-        return to;
+    public GenericParticipant getRecipient() {
+        return recipient;
     }
 
-    public ChatMessage setTo(String to) {
-        this.to = to;
+    public ChatMessage setRecipient(GenericParticipant recipient) {
+        this.recipient = recipient;
         return this;
     }
 
-    public ParticipantType getType() {
-        return type;
+    private GenericParticipant checkGetRecipient() {
+        if(recipient == null) {
+            recipient = new GenericParticipant();
+        }
+        return recipient;
+    }
+
+    public ChatMessage setTo(String to) {
+        checkGetRecipient().setSignature(to);
+        return this;
     }
 
     public ChatMessage setType(ParticipantType type) {
-        this.type = type;
+        checkGetRecipient().setType(type);
         return this;
     }
 
@@ -118,6 +124,15 @@ public class ChatMessage implements Serializable, IdentifiedEntity<MessageKey> {
         return this;
     }
 
+    public String getPacketId() {
+        return packetId;
+    }
+
+    public ChatMessage setPacketId(String packetId) {
+        this.packetId = packetId;
+        return this;
+    }
+
     public String getSubject() {
         return subject == null ? "" : subject;
     }
@@ -135,6 +150,4 @@ public class ChatMessage implements Serializable, IdentifiedEntity<MessageKey> {
         this.text = text;
         return this;
     }
-
-
 }

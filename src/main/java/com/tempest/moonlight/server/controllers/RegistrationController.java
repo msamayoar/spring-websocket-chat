@@ -1,7 +1,7 @@
 package com.tempest.moonlight.server.controllers;
 
 import com.tempest.moonlight.server.exceptions.UserAlreadyExistsException;
-import com.tempest.moonlight.server.services.UserService;
+import com.tempest.moonlight.server.services.users.UserService;
 import com.tempest.moonlight.server.services.dto.RegistrationDTO;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

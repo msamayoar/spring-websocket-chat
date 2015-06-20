@@ -1,4 +1,4 @@
-package com.tempest.moonlight.server.services;
+package com.tempest.moonlight.server.services.users;
 
 import com.tempest.moonlight.server.event.UserSession;
 import com.tempest.moonlight.server.repository.dao.ActiveUsersDAO;

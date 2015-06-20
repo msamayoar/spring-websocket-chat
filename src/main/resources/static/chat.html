@@ -43,10 +43,10 @@
 					<h5>Contacts [{{userContacts.length}}]</h5>
 					<div class="share">
 						<ul class="user-contacts">
-							<li ng-repeat="contact in userContacts" class="contact" ng-class="{selected: contact.contactSignature == selectedContact}">
+							<li ng-repeat="contact in userContacts" class="contact" ng-class="{selected: contact.signature == selectedContact}">
 								<span class="input-icon fui-new"></span>
 								<span class="input-icon fui-user" ng-show="!participant.typing"></span>
-								<a class="name" href="" ng-click="selectContact(contact.contactSignature);">{{contact.contactSignature}}</a>
+								<a class="name" href="" ng-click="selectContact(contact.signature);">{{contact.signature}}</a>
 							</li>
 						</ul>
 					</div>

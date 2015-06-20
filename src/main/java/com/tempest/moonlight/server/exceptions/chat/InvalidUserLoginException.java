@@ -1,4 +1,4 @@
-package com.tempest.moonlight.server.exceptions;
+package com.tempest.moonlight.server.exceptions.chat;
 
 /**
  * Created by Yurii on 2015-05-08.
@@ -9,6 +9,6 @@ public class InvalidUserLoginException extends MessageHandlingException {
     }
 
     public InvalidUserLoginException(String login) {
-        super("Invalid user login '" + login + "'.");
+        super("Invalid user login = '" + login + '\'');
     }
 }

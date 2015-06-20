@@ -4,7 +4,7 @@ import com.tempest.moonlight.server.annotations.DTO;
 import com.tempest.moonlight.server.domain.ParticipantType;
 import com.tempest.moonlight.server.repository.dao.IdentifiedEntity;
 import com.tempest.moonlight.server.services.dto.EntityDTO;
-import com.tempest.moonlight.server.services.dto.GenericContactDTO;
+import com.tempest.moonlight.server.services.dto.contacts.GenericContactDTO;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;

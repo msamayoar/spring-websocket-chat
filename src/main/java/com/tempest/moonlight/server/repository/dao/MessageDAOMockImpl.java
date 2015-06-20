@@ -1,6 +1,6 @@
 package com.tempest.moonlight.server.repository.dao;
 
-import com.tempest.moonlight.server.domain.ChatMessage;
+import com.tempest.moonlight.server.domain.messages.ChatMessage;
 import com.tempest.moonlight.server.domain.MessageKey;
 import com.tempest.moonlight.server.util.StreamUtils;
 import org.springframework.stereotype.Repository;

@@ -1,6 +1,6 @@
 package com.tempest.moonlight.server.util;
 
-import com.tempest.moonlight.server.domain.ChatMessage;
+import com.tempest.moonlight.server.domain.messages.ChatMessage;
 import com.tempest.moonlight.server.domain.ParticipantType;
 import com.tempest.moonlight.server.websockets.CustomMessageHeadersAccessor;
 import org.springframework.messaging.Message;

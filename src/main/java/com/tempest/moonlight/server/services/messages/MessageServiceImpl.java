@@ -1,6 +1,6 @@
-package com.tempest.moonlight.server.services;
+package com.tempest.moonlight.server.services.messages;
 
-import com.tempest.moonlight.server.domain.ChatMessage;
+import com.tempest.moonlight.server.domain.messages.ChatMessage;
 import com.tempest.moonlight.server.repository.dao.MessageDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -21,8 +21,8 @@ public class ChatConfig {
 	public static class Destinations {
 		private Destinations() {}
 		
-		private static final String LOGIN  = "/topic/chat.login";
-		private static final String LOGOUT = "/topic/chat.logout";
+//		private static final String LOGIN  = "/topic/chat.login";
+//		private static final String LOGOUT = "/topic/chat.logout";
 		private static final String PRESENCE = "/topic/presence";
 	}
 	

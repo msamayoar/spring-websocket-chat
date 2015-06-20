@@ -1,6 +1,6 @@
-package com.tempest.moonlight.server.services;
+package com.tempest.moonlight.server.services.messages;
 
-import com.tempest.moonlight.server.domain.ChatMessage;
+import com.tempest.moonlight.server.domain.messages.ChatMessage;
 
 import java.util.Collection;
 

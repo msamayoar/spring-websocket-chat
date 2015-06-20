@@ -1,8 +1,9 @@
-package com.tempest.moonlight.server.services.dto;
+package com.tempest.moonlight.server.services.dto.contacts;
 
 import com.tempest.moonlight.server.domain.ParticipantType;
 import com.tempest.moonlight.server.domain.contacts.ContactRequest;
 import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
+import com.tempest.moonlight.server.services.dto.BiDirectionalDTO;
 
 /**
  * Created by Yurii on 2015-06-20.

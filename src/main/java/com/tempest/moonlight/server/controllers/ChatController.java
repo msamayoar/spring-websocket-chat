@@ -4,12 +4,17 @@ import java.security.Principal;
 import java.util.Collection;
 
 import com.tempest.moonlight.server.domain.ParticipantType;
-import com.tempest.moonlight.server.exceptions.InvalidUserLoginException;
-import com.tempest.moonlight.server.exceptions.MessageHandlingException;
-import com.tempest.moonlight.server.exceptions.UserDoesNotExistException;
+import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
+import com.tempest.moonlight.server.domain.messages.MessageDeliveryStatus;
+import com.tempest.moonlight.server.domain.messages.MessageStatus;
+import com.tempest.moonlight.server.exceptions.chat.*;
 import com.tempest.moonlight.server.repository.dao.ActiveUsersDAO;
-import com.tempest.moonlight.server.services.MessageService;
-import com.tempest.moonlight.server.services.UserService;
+import com.tempest.moonlight.server.services.messages.MessageService;
+import com.tempest.moonlight.server.services.users.UserService;
+import com.tempest.moonlight.server.services.dto.DtoConverter;
+import com.tempest.moonlight.server.services.dto.messages.ChatMessageDTO;
+import com.tempest.moonlight.server.util.StringUtils;
+import com.tempest.moonlight.server.websockets.CustomMessageHeadersAccessor;
 import com.tempest.moonlight.server.websockets.ToUserSender;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +27,11 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.socket.config.WebSocketMessageBrokerStats;
 
-import com.tempest.moonlight.server.domain.ChatMessage;
+import com.tempest.moonlight.server.domain.messages.ChatMessage;
 //import com.tempest.moonlight.server.domain.SessionProfanity;
 //import com.tempest.moonlight.server.util.ProfanityChecker;
 
@@ -50,6 +54,9 @@ public class ChatController {
     private ToUserSender toUserSender;
 
     @Autowired
+    private DtoConverter dtoConverter;
+
+    @Autowired
     private MessageService messageService;
 
     @Autowired
@@ -70,8 +77,72 @@ public class ChatController {
 		return chatMessage;
 	}
 
+    @MessageMapping("/chat/private/")
+    public void onUserPrivate(Principal sender, Message message, @Payload ChatMessage chatMessage) throws MessageHandlingException {
+        processUserPrivateMessage(sender, message, chatMessage);
+    }
+
+    @MessageMapping("/chat/private/{login}")
+    public void onUserPrivate(Principal sender, Message message, @Payload ChatMessage chatMessage, @DestinationVariable("login") String login) throws MessageHandlingException {
+        chatMessage.setTo(login);
+        processUserPrivateMessage(sender, message, chatMessage);
+    }
+
+    private void processUserPrivateMessage(Principal sender, Message message, ChatMessage chatMessage) throws MessageHandlingException {
+        chatMessage.setFrom(sender.getName());
+        chatMessage = onUserPrivateMessageInner(chatMessage, message);
+        toUserSender.sendToUserQueue(
+                chatMessage.getFrom(),
+                "messages/delivery",
+                new MessageDeliveryStatus(chatMessage, MessageStatus.ARRIVED)
+        );
+        toUserSender.sendToUserQueue(
+                chatMessage.getRecipient().getSignature(),
+                "chat/incoming",
+                dtoConverter.convertToDTO(chatMessage, ChatMessageDTO.class)
+        );
+    }
+
+    private ChatMessage onUserPrivateMessageInner(ChatMessage chatMessage, Message message) throws MessageHandlingException {
+        GenericParticipant recipient = checkSetUpMessage(chatMessage, message).getRecipient();
+
+        String recipientSignature = recipient.getSignature();
+        if(!userService.checkUserExists(recipientSignature)) {
+            throw new UserDoesNotExistException(recipientSignature);
+        }
+
+        messageService.saveMessage(chatMessage);
+        return chatMessage;
+    }
+
+    public static ChatMessage checkSetUpMessage(ChatMessage chatMessage, Message message) throws MessageHandlingException {
+        if(StringUtils.isEmpty(chatMessage.getPacketId())) {
+            throw new EmptyMessagePacketIdException();
+        }
+
+        GenericParticipant recipient = chatMessage.getRecipient();
+        if(recipient.getType() == null) {
+            chatMessage.setType(ParticipantType.USER);
+        } else if(recipient.getType() != ParticipantType.USER) {
+            throw new IllegalMessageRecipientType(recipient.getType());
+        }
+
+        String recipientSignature = recipient.getSignature();
+        if(!StringUtils.hasText(recipientSignature)) {
+            throw new InvalidUserLoginException(recipientSignature);
+        }
+
+        CustomMessageHeadersAccessor headerAccessor = CustomMessageHeadersAccessor.wrap(message);
+        headerAccessor.setImmutable();
+
+        chatMessage.setTime(headerAccessor.getTimestamp());
+        chatMessage.setUuid(headerAccessor.getId().toString());
+
+        return chatMessage;
+    }
+
 	@MessageMapping("/chat.private.{login}")
-	public void onUserPrivateMessage(Message message, @Payload ChatMessage chatMessage, @DestinationVariable("login") String login, Principal principal) {
+	public void onUserPrivateMessage(Message message, @Payload ChatMessage chatMessage, @DestinationVariable("login") String login, Principal principal) throws MessageHandlingException {
         if(!StringUtils.hasText(login)) {
             throw new InvalidUserLoginException(login);
         }

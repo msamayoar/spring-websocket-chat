@@ -1,9 +1,9 @@
-package com.tempest.moonlight.server.exceptions;
+package com.tempest.moonlight.server.exceptions.chat;
 
 /**
  * Created by Yurii on 2015-05-08.
  */
-public class MessageHandlingException extends RuntimeException {
+public abstract class MessageHandlingException extends Exception {
     public MessageHandlingException() {
         super();
     }

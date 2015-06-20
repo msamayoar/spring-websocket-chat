@@ -1,5 +1,7 @@
 package com.tempest.moonlight.server.domain;
 
+import com.tempest.moonlight.server.domain.messages.ChatMessage;
+
 import java.io.Serializable;
 
 /**
@@ -11,6 +13,7 @@ public class MessageKey implements Serializable {
     public final ParticipantType type;
     public final long time;
     public final String udid;
+    public final String packetId;
 
     @Override
     public String toString() {
@@ -20,19 +23,21 @@ public class MessageKey implements Serializable {
                 ", type=" + type +
                 ", time=" + time +
                 ", udid='" + udid + '\'' +
+                ", packetId='" + packetId + '\'' +
                 '}';
     }
 
-    public MessageKey(String from, String to, ParticipantType type, long time, String udid) {
+    public MessageKey(String from, String to, ParticipantType type, long time, String udid, String packetId) {
         this.from = from;
         this.to = to;
         this.type = type;
         this.time = time;
         this.udid = udid;
+        this.packetId = packetId;
     }
 
     public MessageKey(ChatMessage chatMessage) {
-        this(chatMessage.getFrom(), chatMessage.getTo(), chatMessage.getType(), chatMessage.getTime(), chatMessage.getUuid());
+        this(chatMessage.getFrom(), chatMessage.getRecipient().getSignature(), chatMessage.getRecipient().getType(), chatMessage.getTime(), chatMessage.getUuid(), chatMessage.getPacketId());
     }
 
     @Override
@@ -46,7 +51,8 @@ public class MessageKey implements Serializable {
         if (!from.equals(that.from)) return false;
         if (!to.equals(that.to)) return false;
         if (type != that.type) return false;
-        return udid.equals(that.udid);
+        if (!udid.equals(that.udid)) return false;
+        return packetId.equals(that.packetId);
 
     }
 
@@ -57,6 +63,7 @@ public class MessageKey implements Serializable {
         result = 31 * result + type.hashCode();
         result = 31 * result + (int) (time ^ (time >>> 32));
         result = 31 * result + udid.hashCode();
+        result = 31 * result + packetId.hashCode();
         return result;
     }
 

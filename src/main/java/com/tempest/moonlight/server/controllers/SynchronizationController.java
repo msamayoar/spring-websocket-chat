@@ -1,7 +1,7 @@
 package com.tempest.moonlight.server.controllers;
 
-import com.tempest.moonlight.server.domain.ChatMessage;
-import com.tempest.moonlight.server.services.MessageService;
+import com.tempest.moonlight.server.domain.messages.ChatMessage;
+import com.tempest.moonlight.server.services.messages.MessageService;
 import com.tempest.moonlight.server.websockets.ToUserSender;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

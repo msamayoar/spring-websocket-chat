@@ -4,6 +4,28 @@
 
 var servicesModule = angular.module('springChat.services', []);
 
+servicesModule.factory('Paths', function() {
+    var APP = "/app/";
+    var USER_QUEUE = "/user/queue/";
+
+    return {
+        CHAT: {
+            PRIVATE_SEND: APP + "chat/private/",
+            DELIVERY_SUB: USER_QUEUE + "messages/delivery",
+            DELIVERY_SEND: APP + "messages/delivery",
+            INCOMING_SUB: USER_QUEUE + "chat/incoming/"
+        },
+        CONTACTS: {
+            GET_SEND: APP + "contacts/get",
+            ALL_SUB: USER_QUEUE + "contacts"
+        },
+        PRESENCE: {
+            PRESENCE_SUB: USER_QUEUE + "presence",
+            PRESENCE_SEND: APP + "presence"
+        }
+    };
+});
+
 servicesModule.factory('EventConst', function(){
 	return {
 		CONVERSATION_CHANGED: "conversationChanged",
@@ -81,7 +103,7 @@ servicesModule.factory('SocketService', ['ChatSocket', 'ChatService', 'ContactsS
 	}
 }]);
 
-servicesModule.factory('ContactsService', ['$rootScope', 'EventConst', 'ChatSocket', function($rootScope, eventConst, chatSocket) {
+servicesModule.factory('ContactsService', ['$rootScope', 'EventConst', 'ChatSocket', 'Paths', function($rootScope, eventConst, chatSocket, paths) {
 	var contacts = [];
 
 	var contactTypes = {
@@ -90,7 +112,7 @@ servicesModule.factory('ContactsService', ['$rootScope', 'EventConst', 'ChatSock
 	};
 
 	var fetchCts = function () {
-		chatSocket.send("/app/contacts/get");
+		chatSocket.send(paths.CONTACTS.GET_SEND/* "/app/contacts/get" */);
 	};
 
 	var parseCts = function(message) {
@@ -115,7 +137,7 @@ servicesModule.factory('ContactsService', ['$rootScope', 'EventConst', 'ChatSock
 		types: contactTypes,
 		initSubscription: function () {
 			chatSocket.subscribe(
-				"/user/queue/contacts/",
+				paths.CONTACTS.ALL_SUB /* "/user/queue/contacts/" */,
 				function(message) {
 					parseCts(message);
 					updateCts();
@@ -145,6 +167,7 @@ servicesModule.factory('ChatService', ['$rootScope', 'EventConst', 'ChatSocket',
 		messages: conversation.messages,
 		updateConversation: function(){ updateConversation(); },
 		updateUser: function () { updateUser(); },
+
 		initSubscription: function () {
 			chatSocket.subscribe("/app/chat.participants", function (message) {
 				var logins = JSON.parse(message.body);
