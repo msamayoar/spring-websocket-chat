@@ -1,12 +1,15 @@
 package com.tempest.moonlight.server.services.dto.contacts;
 
+import com.tempest.moonlight.server.domain.ParticipantType;
 import com.tempest.moonlight.server.domain.contacts.GenericContact;
+import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
+import com.tempest.moonlight.server.services.dto.BiDirectionalDTO;
 import com.tempest.moonlight.server.services.dto.ServerToClientDTO;
 
 /**
  * Created by Yurii on 2015-06-16.
  */
-public class GenericContactDTO implements ServerToClientDTO<GenericContact> {
+public class GenericContactDTO implements BiDirectionalDTO<GenericContact> {
     private int type;
     private String signature;
 
@@ -29,6 +32,16 @@ public class GenericContactDTO implements ServerToClientDTO<GenericContact> {
         signature = genericContact.getContact().getSignature();
         ownerType = genericContact.getOwner().getType().getValue();
         ownerSignature = genericContact.getOwner().getSignature();
+    }
+
+    @Override
+    public void fillEntity(GenericContact contact) {
+        contact.setContact(
+                new GenericParticipant(
+                        ParticipantType.getByValue(type),
+                        signature
+                )
+        );
     }
 
     @Override

@@ -1,11 +1,12 @@
 package com.tempest.moonlight.server.services.dto;
 
-import com.tempest.moonlight.server.annotations.DTO;
 import com.tempest.moonlight.server.exceptions.local.dto.*;
+import com.tempest.moonlight.server.util.CollectionsUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,25 +77,53 @@ public class DtoConverterImpl implements DtoConverter {
             return null;
         }
 
-        Class<?> entityClass = entity.getClass();
+//        Class<?> entityClass = entity.getClass();
+//        DtosHolder dtosHolder = getEntityDtoHolder(entityClass);
+//        Class<? extends ServerToClientDTO<T>> dtoClass = (Class<? extends ServerToClientDTO<T>>) getDtoClass(dtosHolder, EntityDTO.DtoType.S2C);
+
+        Class<? extends ServerToClientDTO<T>> dtoClass = (Class<? extends ServerToClientDTO<T>>) getDtoClass(entity, EntityDTO.DtoType.S2C);
+
+        return convertToDtoInternal(entity, dtoClass);
+    }
+
+    private DtosHolder getEntityDtoHolder(Class<?> entityClass) {
         DtosHolder dtosHolder = dtosContainer.getHolderForEntityClass(entityClass);
         if(dtosHolder == null) {
             throw new NoDtoClassFoundException(entityClass);
         }
+        return dtosHolder;
+    }
 
-        Class<? extends EntityDTO> dtoClass = dtosHolder.getDTO(false);
+    private <T> Class<? extends EntityDTO<T>> getDtoClass(DtosHolder dtosHolder, EntityDTO.DtoType dtoType) {
+        Class<? extends EntityDTO> dtoClass = dtosHolder.getDTO(dtoType == EntityDTO.DtoType.C2S);
         if(dtoClass == null) {
-            throw new NoDtoClassFoundException(entityClass, EntityDTO.DtoType.S2C);
+            throw new NoDtoClassFoundException(dtosHolder.entityClass, dtoType);
+        }
+        return (Class<? extends EntityDTO<T>>) dtoClass;
+    }
+
+    private <T> Class<? extends EntityDTO<T>> getDtoClass(T entity, EntityDTO.DtoType dtoType) {
+        Class<?> entityClass = entity.getClass();
+        DtosHolder dtosHolder = getEntityDtoHolder(entityClass);
+        return getDtoClass(dtosHolder, dtoType);
+    }
+
+    @Override
+    public <T> Collection<? extends ServerToClientDTO<T>> convertToDTOs(Collection<T> entities) {
+        if(entities == null) {
+            throw new NullPointerException();
+        }
+        if(entities.isEmpty()) {
+            return new ArrayList<>();
         }
 
-        try {
-            ServerToClientDTO<T> entityDTO = (ServerToClientDTO<T>) dtoClass.newInstance();
-            entityDTO.fillWithEntity(entity);
-            return entityDTO;
+        T firstEntity = entities.iterator().next();
+        Class<? extends ServerToClientDTO<T>> dtoClass = (Class<? extends ServerToClientDTO<T>>) getDtoClass(firstEntity, EntityDTO.DtoType.S2C);
 
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new CanNotCreateDtoException(entityClass, dtoClass, e);
-        }
+        return CollectionsUtils.convertToList(
+                entities,
+                entity -> convertToDtoInternal(entity, dtoClass)
+        );
     }
 
     @Override

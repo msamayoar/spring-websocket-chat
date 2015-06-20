@@ -7,6 +7,7 @@ import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
 import com.tempest.moonlight.server.repository.dao.IdentifiedEntity;
 import com.tempest.moonlight.server.services.dto.EntityDTO;
 import com.tempest.moonlight.server.services.dto.messages.ChatMessageDTO;
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
@@ -14,6 +15,7 @@ import java.io.Serializable;
  * Created by Yurii on 4/21/2015.
  */
 @DTO(type = EntityDTO.DtoType.BiDir, dto = ChatMessageDTO.class)
+@Component
 public class ChatMessage implements Serializable, IdentifiedEntity<MessageKey> {
 
     private transient MessageKey key;

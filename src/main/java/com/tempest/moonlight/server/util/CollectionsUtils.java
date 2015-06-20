@@ -16,8 +16,12 @@ import java.util.stream.Stream;
  */
 public class CollectionsUtils extends CollectionUtils {
 
-    public static <Key, Value> Collection<Value> filterMapValues(Map<Key, Value> map, Predicate<Map.Entry<Key, Value>> predicate) {
-        return map.entrySet().parallelStream().filter(predicate).map(Map.Entry::getValue).collect(Collectors.toSet());
+    public static <Key, Value> Collection<Value> filterMapValuesByKey(Map<Key, Value> map, Predicate<Key> keyPredicate) {
+        return map.entrySet().parallelStream().filter(entry -> keyPredicate.test(entry.getKey())).map(Map.Entry::getValue).collect(Collectors.toList());
+    }
+
+    public static <Key, Value> Collection<Value> filterMapValues(Map<Key, Value> map, Predicate<Map.Entry<Key, Value>> entryPredicate) {
+        return map.entrySet().parallelStream().filter(entryPredicate).map(Map.Entry::getValue).collect(Collectors.toList());
     }
 
     public static <Key, Value> boolean mapKeysContain(Map<Key, Value> map, Predicate<Map.Entry<Key, Value>> predicate) {
@@ -33,6 +37,10 @@ public class CollectionsUtils extends CollectionUtils {
     }
 
     private static <From, To> Stream<To> mapStream(Collection<From> fromCollection, Function<From, To> mapper) {
-        return fromCollection.stream().map(mapper);
+        return mapStream(fromCollection.stream(), mapper);
+    }
+
+    private static <From, To> Stream<To> mapStream(Stream<From> fromStream, Function<From, To> mapper) {
+        return fromStream.map(mapper);
     }
 }

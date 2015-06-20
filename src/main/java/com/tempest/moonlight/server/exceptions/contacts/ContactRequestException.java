@@ -3,7 +3,7 @@ package com.tempest.moonlight.server.exceptions.contacts;
 /**
  * Created by Yurii on 2015-06-20.
  */
-public abstract class ContactRequestException extends Exception {
+public abstract class ContactRequestException extends ContactsException {
     public ContactRequestException() {
         super();
     }

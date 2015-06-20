@@ -59,7 +59,7 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
         notifyConversationUpdated: function(){ notifyConversationUpdated(); },
 
         sendMessage: function (recipient, recipientType, subject, text) {
-            sendPrivateMessage(recipient, recipientType, subject, text);
+            sendPrivateMessage(recipient, subject, text);
         },
 
         initSubscription: function () {
@@ -105,9 +105,55 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
                 }
             );
 
-            chatSocket.subscribe("/user/queue/errors", function (message) {
-                notification.error(message.body);
-            });
+            chatSocket.subscribe(
+                paths.CHAT.INCOMING_SUB,
+                function (messageStr) {
+                    var message = JSON.parse(messageStr.body);
+                    confirmPrivateMessageDelivery(message);
+                    message.priv = true;
+                    conversation.messages.unshift(message);
+                    updateConversation();
+                }
+            );
+
+            chatSocket.subscribe(
+                /*"/user/queue/errors",*/
+                paths.ERRORS.SUB,
+                function (message) {
+                    notification.error(message.body);
+                }
+            );
+
+            chatSocket.subscribe(
+                /*"/user/queue/sync/messages",*/
+                paths.SYNC.ALL_MESSAGES_SUB,
+                function (message) {
+                    var messages = JSON.parse(message.body);
+
+                    log("sync result = " + messages);
+
+                    var length = messages.length;
+                    for (var i = 0; i < length; i++) {
+                        log(messages[i]);
+                    }
+
+                    for (i = messages.length; i--;) {
+                        log("! " + messages[i]);
+                    }
+                }
+            );
+
+            chatSocket.subscribe(
+                paths.SYNC.PARTICIPANT_SUB,
+                function (frame) {
+                    var messages = JSON.parse(frame.body);
+
+                    var length = messages.length;
+                    for (var i = 0; i < length; i++) {
+                        console.log(messages[i]);
+                    }
+                }
+            )
         }
     }
 }]);

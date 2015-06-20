@@ -56,13 +56,15 @@ public class ChatController {
 
     @Autowired
     private UserService userService;
-	
+
+    /*
 	@SubscribeMapping("/chat.participants")
 	public Collection<String> retrieveParticipants(Principal principal) {
         Collection<String> allActiveUsers = activeUsersDAO.getActiveUsers();
         allActiveUsers.remove(principal.getName());
         return allActiveUsers;
     }
+    */
 
     @MessageMapping("/chat/private")
     public void onUserPrivate(Principal sender, Message message, @Payload ChatMessageDTO chatMessageDTO) throws MessageHandlingException {

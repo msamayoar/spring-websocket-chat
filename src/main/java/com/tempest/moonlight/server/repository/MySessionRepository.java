@@ -16,25 +16,25 @@ public class MySessionRepository extends MapSessionRepository {
 
     @Override
     public ExpiringSession createSession() {
-        logger.error("createSession()");
+//        logger.error("createSession()");
         return super.createSession();
     }
 
     @Override
     public void save(ExpiringSession session) {
-        logger.error("save(" + "session = [" + session + "]" + ")");
+//        logger.error("save(" + "session = [" + session + "]" + ")");
         super.save(session);
     }
 
     @Override
     public ExpiringSession getSession(String id) {
-        logger.error("getSession(" + "id = [" + id + "]" + ")");
+//        logger.error("getSession(" + "id = [" + id + "]" + ")");
         return super.getSession(id);
     }
 
     @Override
     public void delete(String id) {
-        logger.error("delete(" + "id = [" + id + "]" + ")");
+//        logger.error("delete(" + "id = [" + id + "]" + ")");
         super.delete(id);
     }
 }

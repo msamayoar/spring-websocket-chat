@@ -43,18 +43,7 @@ public interface DtoConverter {
 
     <T> ServerToClientDTO<T> convertToDTO(T entity) throws DtoException;
 
-    default <T> Collection<? extends ServerToClientDTO<T>> convertToDTOs(Collection<T> entities)  {
-         return CollectionsUtils.convertToList(
-                 entities,
-                 entity -> {
-                     try {
-                         return convertToDTO(entity);
-                     } catch (DtoException e) {
-                         throw new RuntimeException("Error while converting to DTOs", e);
-                     }
-                 }
-         );
-     }
+    <T> Collection<? extends ServerToClientDTO<T>> convertToDTOs(Collection<T> entities);
 
     <T> T convertFromDTO(ClientToServerDTO<T> dto) throws DtoException;
 

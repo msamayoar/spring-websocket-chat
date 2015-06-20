@@ -28,9 +28,20 @@ var paths = (function () {
     return {
         CHAT: {
             PRIVATE_SEND: send("chat/private"),
+            INCOMING_SUB: sub("chat/incoming"),
+
             DELIVERY_SUB: sub("messages/delivery"),
-            DELIVERY_SEND: send("messages/delivery"),
-            INCOMING_SUB: sub("chat/incoming")
+            DELIVERY_SEND: send("messages/delivery")
+        },
+        SYNC: {
+            PARTICIPANT_SEND: send("messages/participant"),
+            PARTICIPANT_SUB: sub("messages/participant"),
+
+            ALL_MESSAGES_SEND: send("messages/all"),
+            ALL_MESSAGES_SUB: sub("messages/all"),
+
+            OFFLINE_MESSAGES_SEND: send("messages/offline"),
+            OFFLINE_MESSAGES_SUB: sub("messages/offline")
         },
         CONTACTS: {
             GET_SEND: send("contacts/get"),
@@ -39,6 +50,9 @@ var paths = (function () {
         PRESENCE: {
             PRESENCE_SUB: sub("presence"),
             PRESENCE_SEND: send("presence")
+        },
+        ERRORS: {
+            SUB: sub("errors")
         }
     };
 }());

@@ -1,6 +1,7 @@
 package com.tempest.moonlight.server.services.messages;
 
 import com.tempest.moonlight.server.domain.MessageKey;
+import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
 import com.tempest.moonlight.server.domain.messages.ChatMessage;
 import com.tempest.moonlight.server.domain.messages.MessageDeliveryStatus;
 import com.tempest.moonlight.server.domain.messages.MessageStatus;
@@ -34,6 +35,16 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public Collection<ChatMessage> getMessagesOfUser(String user) {
         return StringUtils.isEmpty(user) ? null : messageDAO.getMessagesOfUser(user);
+    }
+
+    @Override
+    public Collection<ChatMessage> getMessagesBetween(String user, GenericParticipant companion) {
+        return messageDAO.getMessagesBetween(user, companion);
+    }
+
+    @Override
+    public Collection<ChatMessage> getUndeliveredMessages(String user) {
+        return null;
     }
 
     @Override

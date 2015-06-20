@@ -12,7 +12,7 @@ import java.io.Serializable;
 /**
  * Created by Yurii on 2015-06-16.
  */
-@DTO(type = EntityDTO.DtoType.S2C, dto = GenericContactDTO.class)
+@DTO(type = EntityDTO.DtoType.BiDir, dto = GenericContactDTO.class)
 //@DTO(type = EntityDTO.DtoType.C2S, dto = GenericContactDTO.class)
 @Component
 public class GenericContact implements IdentifiedEntity<GenericContact>, Serializable {
