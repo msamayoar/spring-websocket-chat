@@ -77,20 +77,12 @@ controllersModule.controller('ChatController', ['$scope', '$location', '$interva
 
 controllersModule.controller('ContactsController', ['$scope', '$timeout', 'ChatSocket', 'ContactsService', 'EventConst', function ($scope, $timeout, chatSocket, contacts, eventConst) {
 
-    $scope.userContacts = contacts.get();
-    $scope.selectedContact = -1;
+    $scope.userContacts = [];
+    $scope.selectedContact = 0;
 
-    $scope.handleClc = function(){
-        console.log(contacts.get());
-    };
-
-    $scope.fetchContacts = function(){
-        contacts.fetch();
-    };
-
-    $scope.selectContact = function (contactId) {
+    $scope.selectContact = function (contact) {
         debugger;
-        $scope.selectedContact = contactId;
+        $scope.selectedContact = contact;
     };
 
     $scope.$on(eventConst.CONTACTS_CHANGED, function () {

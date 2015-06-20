@@ -38,6 +38,7 @@ public class TestDataController {
         testUsers.add("user7");
         testUsers.add("user8");
         testUsers.add("user9");
+        testUsers.add("a");
     }
 
     @PostConstruct
@@ -60,9 +61,6 @@ public class TestDataController {
                 );
             }
         }
-
-        String user3 = "a";
-        userService.registerUser(user3, "1");
     }
 
 }

@@ -16,9 +16,7 @@ servicesModule.factory('NotificationService', ['toaster', function(toaster){
 	return {
 		error: function (message) {
 			toaster.pop('error', "Error", message);
-		},
-		USER_CHANGED: "userChanged",
-		CONTACTS_CHANGED: "contactsChanged"
+		}
 	};
 }]);
 

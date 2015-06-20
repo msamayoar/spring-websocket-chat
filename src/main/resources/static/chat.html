@@ -28,41 +28,41 @@
 		          </nav><!-- /navbar -->
 			</div>
 	        <div class="row">
-        		<div class="col-xs-4">
-        			<!--<h4>Participants [{{participants.length}}]</h4>
-        			<div class="share">
-	        			<ul ng-repeat="participant in participants">
-	        				<li>
-	        					<span class="input-icon fui-new" ng-show="participant.typing"></span>
-	        					<span class="input-icon fui-user" ng-show="!participant.typing"></span>
-	        					<a href="" ng-click="privateSending(participant.username)">{{participant.username}}</a>
+				<div class="col-xs-4" ng-controller="ContactsController">
+					<!--<h4>Participants [{{participants.length}}]</h4>
+                    <div class="share">
+                        <ul ng-repeat="participant in participants">
+                            <li>
+                                <span class="input-icon fui-new" ng-show="participant.typing"></span>
+                                <span class="input-icon fui-user" ng-show="!participant.typing"></span>
+                                <a href="" ng-click="privateSending(participant.username)">{{participant.username}}</a>
 
-	        				</li>
-	        			</ul>
-        			</div>-->
+                            </li>
+                        </ul>
+                    </div>-->
 					<h5>Contacts [{{userContacts.length}}]</h5>
 					<div class="share">
 						<ul class="user-contacts">
-							<li ng-repeat="contact in userContacts" class="contact" ng-class="{selected: contact.id == selectedContact}">
+							<li ng-repeat="contact in userContacts" class="contact" ng-class="{selected: contact.contactSignature == selectedContact}">
 								<span class="input-icon fui-new"></span>
 								<span class="input-icon fui-user" ng-show="!participant.typing"></span>
-								<a class="name" href="" ng-click="selectContact(contact.id)">{{contact.id}}</a>
+								<a class="name" href="" ng-click="selectContact(contact.contactSignature);">{{contact.contactSignature}}</a>
 							</li>
 						</ul>
 					</div>
-        		</div>
-        		<div class="col-xs-8 chat-box">
-        			<h4>Messages</h4>
-	        		<div ng-repeat="message in messages">
-	       	 			<small print-message></small>
-	      			</div>
-        		</div>
-        	</div>
-        	<div class="row">
-       			<div class="form-group">
-       			  <span><small>You will send this message to <strong>{{sendTo}}</strong> (click a participant name to send a private message)</small></span>
-				  <input id="newMessageInput" type="text" class="form-control" placeholder="Write your message and hit enter..." ng-model="newMessage" ng-keyup="$event.keyCode == 13 ? sendMessage() : startTyping()"/>
 				</div>
+        		<div class="col-xs-8 chat-box">
+					<div class="row">
+						<h4>Messages</h4>
+						<div ng-repeat="message in messages">
+							<small print-message></small>
+						</div>
+					</div>
+					<div class="form-group message-input">
+						<span><small>You will send this message to <strong>{{sendTo}}</strong> (click a participant name to send a private message)</small></span>
+						<input id="newMessageInput" type="text" class="form-control" placeholder="Write your message and hit enter..." ng-model="newMessage" ng-keyup="$event.keyCode == 13 ? sendMessage() : startTyping()"/>
+					</div>
+        		</div>
         	</div>
 	    </div>
 	    <!-- /.container -->
