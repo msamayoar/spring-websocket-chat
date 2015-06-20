@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class MessageKey implements Serializable {
     public final String from;
     public final String to;
+    public final ParticipantType type;
     public final long time;
     public final String udid;
 
@@ -16,20 +17,22 @@ public class MessageKey implements Serializable {
         return "MessageKey{" +
                 "from='" + from + '\'' +
                 ", to='" + to + '\'' +
+                ", type=" + type +
                 ", time=" + time +
-                ", id='" + udid + '\'' +
+                ", udid='" + udid + '\'' +
                 '}';
     }
 
-    public MessageKey(String from, String to, long time, String udid) {
+    public MessageKey(String from, String to, ParticipantType type, long time, String udid) {
         this.from = from;
         this.to = to;
+        this.type = type;
         this.time = time;
         this.udid = udid;
     }
 
     public MessageKey(ChatMessage chatMessage) {
-        this(chatMessage.getFrom(), chatMessage.getTo(), chatMessage.getTime(), chatMessage.getUuid());
+        this(chatMessage.getFrom(), chatMessage.getTo(), chatMessage.getType(), chatMessage.getTime(), chatMessage.getUuid());
     }
 
     @Override
@@ -40,18 +43,20 @@ public class MessageKey implements Serializable {
         MessageKey that = (MessageKey) o;
 
         if (time != that.time) return false;
-        if (from != null ? !from.equals(that.from) : that.from != null) return false;
-        if (to != null ? !to.equals(that.to) : that.to != null) return false;
-        return !(udid != null ? !udid.equals(that.udid) : that.udid != null);
+        if (!from.equals(that.from)) return false;
+        if (!to.equals(that.to)) return false;
+        if (type != that.type) return false;
+        return udid.equals(that.udid);
 
     }
 
     @Override
     public int hashCode() {
-        int result = from != null ? from.hashCode() : 0;
-        result = 31 * result + (to != null ? to.hashCode() : 0);
+        int result = from.hashCode();
+        result = 31 * result + to.hashCode();
+        result = 31 * result + type.hashCode();
         result = 31 * result + (int) (time ^ (time >>> 32));
-        result = 31 * result + (udid != null ? udid.hashCode() : 0);
+        result = 31 * result + udid.hashCode();
         return result;
     }
 

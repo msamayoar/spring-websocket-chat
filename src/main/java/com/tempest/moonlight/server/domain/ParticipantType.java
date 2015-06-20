@@ -6,21 +6,21 @@ import java.util.Map;
 /**
  * Created by Yurii on 2015-06-16.
  */
-public enum ContactType implements HasValue<Integer> {
+public enum ParticipantType implements HasValue<Integer> {
     USER(0), GROUP(1)
     ;
 
     public final int value;
 
-    ContactType(int value) {
+    ParticipantType(int value) {
         this.value = value;
     }
 
-    private static final Map<Integer, ContactType> MAP = new HashMap<>();
+    private static final Map<Integer, ParticipantType> MAP = new HashMap<>();
 
     static {
-        for (ContactType contactType : values()) {
-            MAP.put(contactType.value, contactType);
+        for (ParticipantType participantType : values()) {
+            MAP.put(participantType.value, participantType);
         }
     }
 
@@ -29,8 +29,8 @@ public enum ContactType implements HasValue<Integer> {
         return value;
     }
 
-    public static ContactType getByValue(int value) {
-        ContactType type = MAP.get(value);
+    public static ParticipantType getByValue(int value) {
+        ParticipantType type = MAP.get(value);
         if(type == null) {
             throw new IllegalArgumentException("No appropriate type for value = " + value);
         }

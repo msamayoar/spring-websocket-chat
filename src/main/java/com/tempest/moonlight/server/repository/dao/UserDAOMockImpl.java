@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
  * Created by Yurii on 2015-05-07.
  */
 @Repository
-public class UserMockDAOImpl extends AbstractMockDAO<User, String> implements UserDAO {
+public class UserDAOMockImpl extends AbstractMockDAO<User, String> implements UserDAO {
 }

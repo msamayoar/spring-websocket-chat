@@ -1,6 +1,7 @@
-package com.tempest.moonlight.server.repository.dao;
+package com.tempest.moonlight.server.repository.dao.contacts;
 
-import com.tempest.moonlight.server.domain.GenericContact;
+import com.tempest.moonlight.server.domain.contacts.GenericContact;
+import com.tempest.moonlight.server.repository.dao.DAO;
 
 import java.util.Collection;
 
