@@ -5,7 +5,7 @@ import com.tempest.moonlight.server.domain.contacts.GenericContact;
 import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
 import com.tempest.moonlight.server.services.contacts.ContactsService;
 import com.tempest.moonlight.server.services.users.UserService;
-import com.tempest.moonlight.server.util.StreamUtils;
+import com.tempest.moonlight.server.util.CollectionsUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -45,7 +45,7 @@ public class TestDataController {
     public void addTestData() {
         testUsers.forEach(user -> userService.registerUser(user, user));
 
-        List<GenericParticipant> participants = StreamUtils.convertToList(
+        List<GenericParticipant> participants = CollectionsUtils.convertToList(
                 testUsers,
                 userLogin -> new GenericParticipant(ParticipantType.USER, userLogin)
         );

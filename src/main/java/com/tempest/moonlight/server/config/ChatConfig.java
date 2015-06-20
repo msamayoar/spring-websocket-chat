@@ -39,8 +39,8 @@ public class ChatConfig {
 
 	@Bean
 	@Description("Tracks user presence (join / leave) and broadcasts it to all connected users")
-	public SessionEventsListener presenceEventListener(SimpMessagingTemplate messagingTemplate) {
-		SessionEventsListener presence = new SessionEventsListener(messagingTemplate/*, participantRepository()*/);
+	public SessionEventsListener presenceEventListener(/*SimpMessagingTemplate messagingTemplate*/) {
+		SessionEventsListener presence = new SessionEventsListener(/*messagingTemplate*//*, participantRepository()*/);
 //		presence.setLoginDestination(Destinations.LOGIN);
 //		presence.setLogoutDestination(Destinations.LOGOUT);
 		presence.setPresenceDestination(Destinations.PRESENCE);

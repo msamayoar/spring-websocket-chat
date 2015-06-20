@@ -1,7 +1,7 @@
 package com.tempest.moonlight.server.services.dto;
 
 import com.tempest.moonlight.server.exceptions.local.dto.DtoException;
-import com.tempest.moonlight.server.util.StreamUtils;
+import com.tempest.moonlight.server.util.CollectionsUtils;
 
 import java.util.Collection;
 
@@ -14,7 +14,7 @@ public interface DtoConverter {
     <Entity> ServerToClientDTO<Entity> convertToDTO(Entity entity, Class<? extends ServerToClientDTO<Entity>> dtoClass) throws DtoException;
 
     default <Entity> Collection<? extends ServerToClientDTO<Entity>> convertToDTOs(Collection<Entity> entities, Class<? extends ServerToClientDTO<Entity>> dtoClass) {
-        return StreamUtils.convertToList(
+        return CollectionsUtils.convertToList(
                 entities,
                 entity -> {
                     try {
@@ -29,7 +29,7 @@ public interface DtoConverter {
     <Entity> Entity convertFromDTO(ClientToServerDTO<Entity> dto, Class<Entity> entityClass) throws DtoException;
 
     default <Entity> Collection<Entity> convertFromDTOs(Collection<ClientToServerDTO<Entity>> dtos, Class<Entity> entityClass) throws DtoException {
-        return StreamUtils.convertToList(
+        return CollectionsUtils.convertToList(
                 dtos,
                 dto -> {
                     try {
@@ -44,7 +44,7 @@ public interface DtoConverter {
     <T> ServerToClientDTO<T> convertToDTO(T entity) throws DtoException;
 
     default <T> Collection<? extends ServerToClientDTO<T>> convertToDTOs(Collection<T> entities)  {
-         return StreamUtils.convertToList(
+         return CollectionsUtils.convertToList(
                  entities,
                  entity -> {
                      try {
@@ -59,7 +59,7 @@ public interface DtoConverter {
     <T> T convertFromDTO(ClientToServerDTO<T> dto) throws DtoException;
 
     default <T> Collection<T> convertFromDTO(Collection<? extends ClientToServerDTO<T>> dtos) {
-        return StreamUtils.convertToList(
+        return CollectionsUtils.convertToList(
                 dtos,
                 dto -> {
                     try {

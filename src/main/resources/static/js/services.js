@@ -8,20 +8,40 @@ servicesModule.factory('Paths', function() {
     var APP = "/app/";
     var USER_QUEUE = "/user/queue/";
 
+    var prfx = function(prefix, destination) {
+        return prefix + destination;
+    };
+
+    var send_prfx = function(prefix, destination) {
+        return prfx(prefix, destination);
+    };
+
+    var send = function(destination) {
+        return send_prfx(APP, destination);
+    };
+
+    var sub_prfx = function(prefix, destination) {
+        return prfx(prefix, destination);
+    } ;
+
+    var sub = function(destination) {
+        return sub_prfx(USER_QUEUE, destination);
+    };
+
     return {
         CHAT: {
-            PRIVATE_SEND: APP + "chat/private/",
-            DELIVERY_SUB: USER_QUEUE + "messages/delivery",
-            DELIVERY_SEND: APP + "messages/delivery",
-            INCOMING_SUB: USER_QUEUE + "chat/incoming/"
+            PRIVATE_SEND: send("chat/private"),
+            DELIVERY_SUB: sub("messages/delivery"),
+            DELIVERY_SEND: send("messages/delivery"),
+            INCOMING_SUB: sub("chat/incoming/")
         },
         CONTACTS: {
-            GET_SEND: APP + "contacts/get",
-            ALL_SUB: USER_QUEUE + "contacts"
+            GET_SEND: send("contacts/get"),
+            ALL_SUB: sub("contacts")
         },
         PRESENCE: {
-            PRESENCE_SUB: USER_QUEUE + "presence",
-            PRESENCE_SEND: APP + "presence"
+            PRESENCE_SUB: sub("presence"),
+            PRESENCE_SEND: send("presence")
         }
     };
 });
@@ -147,7 +167,7 @@ servicesModule.factory('ContactsService', ['$rootScope', 'EventConst', 'ChatSock
 	}
 }]);
 
-servicesModule.factory('ChatService', ['$rootScope', 'EventConst', 'ChatSocket', 'NotificationService', function($rootScope, eventConst, chatSocket, notification) {
+servicesModule.factory('ChatService', ['$rootScope', 'EventConst', 'ChatSocket', 'NotificationService', 'Paths', function($rootScope, eventConst, chatSocket, notification, paths) {
 	var user = {
 		username: ""
 	};
@@ -157,9 +177,71 @@ servicesModule.factory('ChatService', ['$rootScope', 'EventConst', 'ChatSocket',
 		message: "",
 		messages: []
 	};
-	
+
+    var getPrefix = function () {
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        var text = "";
+
+        for( var i=0; i < 5; i++ )
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
+    };
+
+    var packetId = {
+        prefix: "",
+        id: 0
+    };
+
+    packetId.prefix = getPrefix();
+
+    var makeId = function() {
+        return packetId.prefix + "-" + packetId.id++;
+    };
+
 	var updateConversation = function () { $rootScope.$broadcast(eventConst.CONVERSATION_CHANGED); };
 	var updateUser = function () { $rootScope.$broadcast(eventConst.USER_CHANGED); };
+
+    var sendGenericChatMessage = function(destination, recipient, recipientType, subject, text) {
+        chatSocket.send(
+            destination,
+            {},
+            JSON.stringify(
+                {
+                    from: user.username,
+                    recipientType: recipientType,
+                    recipient: recipient,
+
+                    subject: subject,
+                    text: text,
+
+                    packetId: makeId()
+                }
+            )
+        )
+    };
+
+    var sendPrivateMessage = function(recipient, subject, text) {
+        sendGenericChatMessage(paths.CHAT.PRIVATE_SEND, recipient, 0, subject, text);
+    };
+
+    var confirmDeliveryStatus = function (packetId, uuid, status) {
+        chatSocket.send(
+            paths.CHAT.DELIVERY_SEND,
+            {},
+            JSON.stringify(
+                {
+                    packetId: packetId,
+                    uuid: uuid,
+                    status: status
+                }
+            )
+        )
+    };
+
+    var confirmDelivery = function(message) {
+        confirmDeliveryStatus(message.packetId, message.uuid, 1);
+    };
 
 	return {
 		user: user,
@@ -168,8 +250,21 @@ servicesModule.factory('ChatService', ['$rootScope', 'EventConst', 'ChatSocket',
 		updateConversation: function(){ updateConversation(); },
 		updateUser: function () { updateUser(); },
 
+        sendMessage: function (recipient, recipientType, subject, text) {
+            sendPrivateMessage(recipient, recipientType, subject, text);
+        },
+
 		initSubscription: function () {
-			chatSocket.subscribe("/app/chat.participants", function (message) {
+
+            chatSocket.subscribe(
+                paths.CHAT.DELIVERY_SUB,
+                function(deliveryStatus) {
+                    console.log(JSON.parse(deliveryStatus));
+                }
+            );
+
+			/*
+            chatSocket.subscribe("/app/chat.participants", function (message) {
 				var logins = JSON.parse(message.body);
 				for(var i = 0; i < logins.length; i++) {
 					conversation.participants.unshift({username: logins[i], typing: false});
@@ -192,6 +287,7 @@ servicesModule.factory('ChatService', ['$rootScope', 'EventConst', 'ChatSocket',
 				}
 				updateConversation();
 			});
+			*/
 
 			chatSocket.subscribe("/topic/chat.typing", function (message) {
 				var parsed = JSON.parse(message.body);
@@ -207,34 +303,45 @@ servicesModule.factory('ChatService', ['$rootScope', 'EventConst', 'ChatSocket',
 				updateConversation();
 			});
 
-			chatSocket.subscribe("/topic/presence", function (message) {
-				var presence = JSON.parse(message.body);
-				var presenceStatus = presence.status;
-				var login = presence.login;
-				console.log("Presence '" + presenceStatus + "' received from '" + login + "'");
-				if(presenceStatus == "offline") {
-					for (var index in conversation.participants) {
-						if (conversation.participants[index].username == login) {
-							conversation.participants.splice(index, 1);
-						}
-					}
-				} else if(presenceStatus == "online") {
-					conversation.participants.unshift({username: presence.login, typing: false});
-				}
-				updateConversation();
-			});
+            chatSocket.subscribe(
+                //"/topic/presence",
+                paths.PRESENCE.PRESENCE_SUB,
+                function (message) {
+                    var presence = JSON.parse(message.body);
+                    var presenceStatus = presence.status;
+                    var login = presence.login;
+                    console.log("Presence '" + presenceStatus + "' received from '" + login + "'");
+                    if (presenceStatus == "offline") {
+                        for (var index in conversation.participants) {
+                            if (conversation.participants[index].username == login) {
+                                conversation.participants.splice(index, 1);
+                            }
+                        }
+                    } else if (presenceStatus == "online") {
+                        conversation.participants.unshift({username: presence.login, typing: false});
+                    }
+                    updateConversation();
+                }
+            );
 
+            /*
 			chatSocket.subscribe("/topic/chat.message", function (message) {
 				conversation.messages.unshift(JSON.parse(message.body));
 				updateConversation();
 			});
+			*/
 
-			chatSocket.subscribe("/user/queue/chat.message", function (message) {
-				var parsed = JSON.parse(message.body);
-				parsed.priv = true;
-				conversation.messages.unshift(parsed);
-				updateConversation();
-			});
+			chatSocket.subscribe(
+                //"/user/queue/chat.message",
+                paths.CHAT.INCOMING_SUB,
+                function (messageStr) {
+                    var message = JSON.parse(messageStr.body);
+                    confirmDelivery(message);
+                    message.priv = true;
+                    conversation.messages.unshift(message);
+                    updateConversation();
+                }
+            );
 
 			chatSocket.subscribe("/user/queue/errors", function (message) {
 				notification.error(message.body);

@@ -26,15 +26,22 @@ controllersModule.controller('ChatController', ['$scope', '$location', '$interva
     };
 
     $scope.sendMessage = function () {
-        var destination = "/app/chat.message";
+        //var destination = "/app/chat.message";
+        //
+        //if ($scope.sendTo != "everyone") {
+        //    destination = "/app/chat.private." + $scope.sendTo;
+        //    $scope.messages.unshift({text: $scope.newMessage, from: 'you', priv: true, to: $scope.sendTo});
+        //}
+        //
+        //chatSocket.send(destination, {}, JSON.stringify({text: $scope.newMessage}));
+        //$scope.newMessage = '';
 
-        if ($scope.sendTo != "everyone") {
-            destination = "/app/chat.private." + $scope.sendTo;
-            $scope.messages.unshift({text: $scope.newMessage, from: 'you', priv: true, to: $scope.sendTo});
-        }
-
-        chatSocket.send(destination, {}, JSON.stringify({text: $scope.newMessage}));
-        $scope.newMessage = '';
+        chat.sendMessage(
+            "user2",
+            0,
+            "SNAFU",
+            $scope.newMessage
+        )
     };
 
     $scope.startTyping = function () {
@@ -78,7 +85,7 @@ controllersModule.controller('ChatController', ['$scope', '$location', '$interva
 controllersModule.controller('ContactsController', ['$scope', '$timeout', 'ChatSocket', 'ContactsService', 'EventConst', function ($scope, $timeout, chatSocket, contacts, eventConst) {
 
     $scope.userContacts = [];
-    $scope.selectedContact = 0;
+    $scope.selectedContact = "";
 
     $scope.selectContact = function (contact) {
         debugger;

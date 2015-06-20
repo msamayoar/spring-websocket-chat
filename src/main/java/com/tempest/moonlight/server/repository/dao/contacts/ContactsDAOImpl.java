@@ -4,7 +4,7 @@ import com.tempest.moonlight.server.domain.ParticipantType;
 import com.tempest.moonlight.server.domain.contacts.GenericContact;
 import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
 import com.tempest.moonlight.server.repository.dao.AbstractMockDAO;
-import com.tempest.moonlight.server.util.StreamUtils;
+import com.tempest.moonlight.server.util.CollectionsUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -17,7 +17,7 @@ public class ContactsDAOImpl extends AbstractMockDAO<GenericContact, GenericCont
 
     @Override
     public Collection<GenericContact> getContactsOfUser(String login) {
-        return StreamUtils.filterMapValues(
+        return CollectionsUtils.filterMapValues(
                 getMap(),
                 entry -> {
                     GenericParticipant owner = entry.getKey().getOwner();

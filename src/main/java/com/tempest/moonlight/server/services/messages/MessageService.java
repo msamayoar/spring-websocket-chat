@@ -1,6 +1,8 @@
 package com.tempest.moonlight.server.services.messages;
 
 import com.tempest.moonlight.server.domain.messages.ChatMessage;
+import com.tempest.moonlight.server.domain.messages.MessageDeliveryStatus;
+import com.tempest.moonlight.server.exceptions.chat.MessageHandlingException;
 
 import java.util.Collection;
 
@@ -13,4 +15,6 @@ public interface MessageService {
     Collection<ChatMessage> getMessagesOfGroup(String group);
     Collection<ChatMessage> getMessagesOfChannel(String channel);
     void markMessageDelivered(ChatMessage chatMessage, boolean delivered);
+
+    void updateMessageDeliveryStatus(MessageDeliveryStatus deliveryStatus) throws MessageHandlingException;
 }

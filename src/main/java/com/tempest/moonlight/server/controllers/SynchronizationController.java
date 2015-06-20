@@ -2,7 +2,7 @@ package com.tempest.moonlight.server.controllers;
 
 import com.tempest.moonlight.server.domain.messages.ChatMessage;
 import com.tempest.moonlight.server.services.messages.MessageService;
-import com.tempest.moonlight.server.websockets.ToUserSender;
+import com.tempest.moonlight.server.websockets.ToParticipantSender;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -21,7 +21,7 @@ public class SynchronizationController {
     private SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
-    private ToUserSender toUserSender;
+    private ToParticipantSender toParticipantSender;
 
     @Autowired
     private MessageService messageService;
@@ -31,6 +31,6 @@ public class SynchronizationController {
         String name = principal.getName();
         Collection<ChatMessage> messagesOfUser = messageService.getMessagesOfUser(name);
 //        simpMessagingTemplate.convertAndSend("/user/" + name + "/queue/sync.messages", messagesOfUser);
-        toUserSender.sendToUserQueue(name, "sync/messages", messagesOfUser);
+        toParticipantSender.sendToUserQueue(name, "sync/messages", messagesOfUser);
     }
 }

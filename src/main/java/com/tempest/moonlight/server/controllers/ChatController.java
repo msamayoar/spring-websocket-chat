@@ -15,7 +15,7 @@ import com.tempest.moonlight.server.services.dto.DtoConverter;
 import com.tempest.moonlight.server.services.dto.messages.ChatMessageDTO;
 import com.tempest.moonlight.server.util.StringUtils;
 import com.tempest.moonlight.server.websockets.CustomMessageHeadersAccessor;
-import com.tempest.moonlight.server.websockets.ToUserSender;
+import com.tempest.moonlight.server.websockets.ToParticipantSender;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
@@ -51,7 +51,7 @@ public class ChatController {
     private SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
-    private ToUserSender toUserSender;
+    private ToParticipantSender toParticipantSender;
 
     @Autowired
     private DtoConverter dtoConverter;
@@ -68,35 +68,30 @@ public class ChatController {
         allActiveUsers.remove(principal.getName());
         return allActiveUsers;
     }
-	
-	@MessageMapping("/chat.message")
-	public ChatMessage onUserMessage(Message message, @Payload ChatMessage chatMessage, Principal principal) {
 
-        messageService.saveMessage(setUpMessage(chatMessage, principal, null, ParticipantType.USER, message));
-		
-		return chatMessage;
-	}
-
-    @MessageMapping("/chat/private/")
-    public void onUserPrivate(Principal sender, Message message, @Payload ChatMessage chatMessage) throws MessageHandlingException {
-        processUserPrivateMessage(sender, message, chatMessage);
+    @MessageMapping("/chat/private")
+    public void onUserPrivate(Principal sender, Message message, @Payload ChatMessageDTO chatMessageDTO) throws MessageHandlingException {
+        processUserPrivateMessage(sender, message, chatMessageDTO);
     }
 
     @MessageMapping("/chat/private/{login}")
-    public void onUserPrivate(Principal sender, Message message, @Payload ChatMessage chatMessage, @DestinationVariable("login") String login) throws MessageHandlingException {
-        chatMessage.setTo(login);
-        processUserPrivateMessage(sender, message, chatMessage);
+    public void onUserPrivate(Principal sender, Message message, @Payload ChatMessageDTO chatMessageDTO, @DestinationVariable("login") String login) throws MessageHandlingException {
+        chatMessageDTO.setRecipient(login);
+        processUserPrivateMessage(sender, message, chatMessageDTO);
     }
 
-    private void processUserPrivateMessage(Principal sender, Message message, ChatMessage chatMessage) throws MessageHandlingException {
+    private void processUserPrivateMessage(Principal sender, Message message, ChatMessageDTO chatMessageDTO) throws MessageHandlingException {
+        ChatMessage chatMessage = dtoConverter.convertFromDTO(chatMessageDTO, ChatMessage.class);
         chatMessage.setFrom(sender.getName());
+
         chatMessage = onUserPrivateMessageInner(chatMessage, message);
-        toUserSender.sendToUserQueue(
+
+        toParticipantSender.sendToUserQueue(
                 chatMessage.getFrom(),
                 "messages/delivery",
                 new MessageDeliveryStatus(chatMessage, MessageStatus.ARRIVED)
         );
-        toUserSender.sendToUserQueue(
+        toParticipantSender.sendToUserQueue(
                 chatMessage.getRecipient().getSignature(),
                 "chat/incoming",
                 dtoConverter.convertToDTO(chatMessage, ChatMessageDTO.class)
@@ -110,6 +105,8 @@ public class ChatController {
         if(!userService.checkUserExists(recipientSignature)) {
             throw new UserDoesNotExistException(recipientSignature);
         }
+
+        logger.info("user sent message = " + chatMessage);
 
         messageService.saveMessage(chatMessage);
         return chatMessage;
@@ -141,25 +138,35 @@ public class ChatController {
         return chatMessage;
     }
 
-	@MessageMapping("/chat.private.{login}")
-	public void onUserPrivateMessage(Message message, @Payload ChatMessage chatMessage, @DestinationVariable("login") String login, Principal principal) throws MessageHandlingException {
-        if(!StringUtils.hasText(login)) {
-            throw new InvalidUserLoginException(login);
-        }
+    public void onMessagedeliveryStatus(Principal principal, MessageDeliveryStatus deliveryStatus) throws MessageHandlingException {
 
-        if(!userService.checkUserExists(login)) {
-            throw new UserDoesNotExistException(login);
-        }
+    }
 
-        messageService.saveMessage(setUpMessage(chatMessage, principal, login, ParticipantType.USER, message));
+//    @MessageMapping("/chat.message")
+//    public ChatMessage onUserMessage(Message message, @Payload ChatMessage chatMessage, Principal principal) {
+//        messageService.saveMessage(setUpMessage(chatMessage, principal, null, ParticipantType.USER, message));
+//        return chatMessage;
+//    }
 
-//		simpMessagingTemplate.convertAndSend("/user/" + login + "/queue/chat.message", chatMessage);
-        toUserSender.sendToUserQueue(login, "chat.message", chatMessage);
-	}
+//	@MessageMapping("/chat.private.{login}")
+//	public void onUserPrivateMessage(Message message, @Payload ChatMessage chatMessage, @DestinationVariable("login") String login, Principal principal) throws MessageHandlingException {
+//        if(!StringUtils.hasText(login)) {
+//            throw new InvalidUserLoginException(login);
+//        }
+//
+//        if(!userService.checkUserExists(login)) {
+//            throw new UserDoesNotExistException(login);
+//        }
+//
+//        messageService.saveMessage(setUpMessage(chatMessage, principal, login, ParticipantType.USER, message));
+//
+////		simpMessagingTemplate.convertAndSend("/user/" + login + "/queue/chat.message", chatMessage);
+//        toParticipantSender.sendToUserQueue(login, "chat.message", chatMessage);
+//	}
 	
 	@MessageExceptionHandler
 	@SendToUser(value = "/queue/errors", broadcast = false)
-	public String handleProfanity(MessageHandlingException e) {
+	public String onMessageHandlingException(MessageHandlingException e) {
 		return e.getMessage();
 	}
 

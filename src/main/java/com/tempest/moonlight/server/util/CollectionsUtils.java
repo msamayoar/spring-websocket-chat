@@ -1,5 +1,7 @@
 package com.tempest.moonlight.server.util;
 
+import org.springframework.util.CollectionUtils;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +14,8 @@ import java.util.stream.Stream;
 /**
  * Created by Yurii on 2015-06-11.
  */
-public class StreamUtils {
+public class CollectionsUtils extends CollectionUtils {
+
     public static <Key, Value> Collection<Value> filterMapValues(Map<Key, Value> map, Predicate<Map.Entry<Key, Value>> predicate) {
         return map.entrySet().parallelStream().filter(predicate).map(Map.Entry::getValue).collect(Collectors.toSet());
     }

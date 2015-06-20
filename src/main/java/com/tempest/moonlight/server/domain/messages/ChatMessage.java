@@ -28,6 +28,8 @@ public class ChatMessage implements Serializable, IdentifiedEntity<MessageKey> {
     private String subject;
     private String text;
 
+    private MessageStatus status;
+
     public ChatMessage() {
     }
 
@@ -53,20 +55,21 @@ public class ChatMessage implements Serializable, IdentifiedEntity<MessageKey> {
     @Override
     public String toString() {
         return "ChatMessage{" +
-                "key=" + key +
-                ", from='" + from + '\'' +
+                "from='" + from + '\'' +
                 ", recipient=" + recipient +
                 ", time=" + time +
                 ", uuid='" + uuid + '\'' +
+                ", packetId='" + packetId + '\'' +
                 ", subject='" + subject + '\'' +
                 ", text='" + text + '\'' +
+                ", status=" + status +
                 '}';
     }
 
     @Override
     public MessageKey getKey() {
         if(key == null) {
-            key = new MessageKey(this);
+            key = MessageKey.fromChatMessage(this);
         }
         return key;
     }
@@ -148,6 +151,15 @@ public class ChatMessage implements Serializable, IdentifiedEntity<MessageKey> {
 
     public ChatMessage setText(String text) {
         this.text = text;
+        return this;
+    }
+
+    public MessageStatus getStatus() {
+        return status;
+    }
+
+    public ChatMessage setStatus(MessageStatus status) {
+        this.status = status;
         return this;
     }
 }

@@ -1,14 +1,17 @@
 package com.tempest.moonlight.server.event;
 
+import com.tempest.moonlight.server.domain.contacts.GenericContact;
 import com.tempest.moonlight.server.domain.presence.PresenceMessage;
 import com.tempest.moonlight.server.domain.presence.PresenceStatus;
+import com.tempest.moonlight.server.services.contacts.ContactsService;
 import com.tempest.moonlight.server.services.users.ActiveUsersService;
+import com.tempest.moonlight.server.util.CollectionsUtils;
+import com.tempest.moonlight.server.websockets.ToParticipantSender;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
@@ -26,21 +29,28 @@ public class SessionEventsListener implements ApplicationListener<ApplicationEve
     @Autowired
     private ActiveUsersService activeUsersService;
 
-	private SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private ContactsService contactsService;
+
+//	private SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    private ToParticipantSender toParticipantSender;
+
 //    private String loginDestination;
 //	private String logoutDestination;
 
 	private String presenceDestination;
 	
-	public SessionEventsListener(SimpMessagingTemplate messagingTemplate) {
-		this.messagingTemplate = messagingTemplate;
-
+//	public SessionEventsListener(SimpMessagingTemplate messagingTemplate) {
+//		this.messagingTemplate = messagingTemplate;
+//
 //		headerInitializer = new IdTimestampMessageHeaderInitializer();
 //		headerInitializer.setIdGenerator(new AlternativeJdkIdGenerator());
 //		headerInitializer.setEnableTimestamp(true);
 //
 //		messagingTemplate.setHeaderInitializer(headerInitializer);
-	}
+//	}
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
@@ -58,23 +68,23 @@ public class SessionEventsListener implements ApplicationListener<ApplicationEve
 
 		UserSession userSession = new UserSession(headers.getSessionId(), username);
 		if(activeUsersService.addUserSession(userSession)) {
-            PresenceMessage presence = new PresenceMessage(username, PresenceStatus.online);
-            logger.error("Sending presence message = " + presence);
-            messagingTemplate.convertAndSend(presenceDestination, presence);
+//            PresenceMessage presence = new PresenceMessage(username, PresenceStatus.online);
+            broadcastUserPresence(username, PresenceStatus.online);
+//            messagingTemplate.convertAndSend(presenceDestination, presence);
         }
 	}
 	
 	private void handleSessionDisconnect(SessionDisconnectEvent event) {
         String sessionId = event.getSessionId();
-        logger.error("sessionId from SessionDisconnectEvent = " + sessionId);
+//        logger.error("sessionId from SessionDisconnectEvent = " + sessionId);
 
         SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
         String username = headers.getUser().getName();
-        logger.error("sessionId from Headers = " + headers.getSessionId());
+//        logger.error("sessionId from Headers = " + headers.getSessionId());
 
 		if(activeUsersService.sessionExists(sessionId)) {
             if(activeUsersService.deleteUserSession(sessionId, username)) {
-                messagingTemplate.convertAndSend(presenceDestination, new PresenceMessage(username, PresenceStatus.offline));
+                broadcastUserPresence(username, PresenceStatus.offline);
             }
 		}
 
@@ -85,6 +95,18 @@ public class SessionEventsListener implements ApplicationListener<ApplicationEve
 //				}
 //		);
 	}
+
+    private void broadcastUserPresence(String login, PresenceStatus presenceStatus) {
+        logger.error("Sending presence message = [user = " + login + ", status = " + presenceStatus + "]");
+        toParticipantSender.sendToUsersQueues(
+                CollectionsUtils.convertToList(
+                        contactsService.getContactsOfUser(login),
+                        GenericContact::getContact
+                ),
+                "presence",
+                new PresenceMessage(login, presenceStatus)
+        );
+    }
 
 
 //	public ParticipantRepository getParticipantRepository() {

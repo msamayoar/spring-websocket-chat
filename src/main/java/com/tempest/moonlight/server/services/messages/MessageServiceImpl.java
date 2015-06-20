@@ -1,6 +1,11 @@
 package com.tempest.moonlight.server.services.messages;
 
+import com.tempest.moonlight.server.domain.MessageKey;
 import com.tempest.moonlight.server.domain.messages.ChatMessage;
+import com.tempest.moonlight.server.domain.messages.MessageDeliveryStatus;
+import com.tempest.moonlight.server.domain.messages.MessageStatus;
+import com.tempest.moonlight.server.exceptions.chat.MessageDoesNotExistsException;
+import com.tempest.moonlight.server.exceptions.chat.MessageHandlingException;
 import com.tempest.moonlight.server.repository.dao.MessageDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,5 +48,16 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void markMessageDelivered(ChatMessage chatMessage, boolean delivered) {
 
+    }
+
+    @Override
+    public void updateMessageDeliveryStatus(MessageDeliveryStatus deliveryStatus) throws MessageHandlingException {
+        MessageKey messageKey = MessageKey.fromDeliveryStatus(deliveryStatus);
+        if(!messageDAO.existsWithKey(messageKey)) {
+            throw new MessageDoesNotExistsException(messageKey);
+        }
+
+        ChatMessage chatMessage = messageDAO.get(messageKey);
+        chatMessage.setStatus(MessageStatus.getByValue(deliveryStatus.getStatus()));
     }
 }

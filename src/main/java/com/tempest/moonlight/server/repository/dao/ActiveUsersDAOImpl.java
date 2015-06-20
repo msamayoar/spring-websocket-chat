@@ -1,7 +1,7 @@
 package com.tempest.moonlight.server.repository.dao;
 
 import com.tempest.moonlight.server.event.UserSession;
-import com.tempest.moonlight.server.util.StreamUtils;
+import com.tempest.moonlight.server.util.CollectionsUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -18,13 +18,13 @@ public class ActiveUsersDAOImpl extends AbstractMockDAO<UserSession, UserSession
 
     @Override
     public Collection<String> getActiveUsers() {
-        return StreamUtils.convertToSet(getActiveSessions(), UserSession::getLogin);
+        return CollectionsUtils.convertToSet(getActiveSessions(), UserSession::getLogin);
     }
 
 
     @Override
     public boolean containsSessionsOfUser(String login) {
-        return StreamUtils.mapKeysContain(
+        return CollectionsUtils.mapKeysContain(
                 getMap(),
                 entry -> entry.getKey().getLogin().equals(login)
         );

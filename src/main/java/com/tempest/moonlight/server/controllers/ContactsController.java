@@ -8,7 +8,7 @@ import com.tempest.moonlight.server.services.contacts.ContactsService;
 import com.tempest.moonlight.server.services.dto.contacts.ContactRequestDTO;
 import com.tempest.moonlight.server.services.dto.DtoConverter;
 import com.tempest.moonlight.server.services.dto.contacts.GenericContactDTO;
-import com.tempest.moonlight.server.websockets.ToUserSender;
+import com.tempest.moonlight.server.websockets.ToParticipantSender;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
@@ -33,13 +33,13 @@ public class ContactsController {
     private ContactsService contactsService;
 
     @Autowired
-    private ToUserSender toUserSender;
+    private ToParticipantSender toParticipantSender;
 
     @Autowired
     private DtoConverter dtoConverter;
 
     @MessageMapping({ "/contacts", "/contacts/get" })
-    @SendToUser(value = "/queue/contacts/", broadcast = false)
+    @SendToUser(value = "/queue/contacts", broadcast = false)
     public Collection<GenericContactDTO> getContacts(Principal principal) {
 //        /**
 //         * Mock implementation used!
@@ -69,7 +69,7 @@ public class ContactsController {
 
         contactRequest.setInitiator(principal.getName());
         if(contactsService.processContactRequest(contactRequest)) {
-            toUserSender.sendToUserQueue(contactRequest.getRecipient(), "contacts/requests", contactRequestDTO);
+            toParticipantSender.sendToUserQueue(contactRequest.getRecipient(), "contacts/requests", contactRequestDTO);
         }
     }
 
@@ -80,7 +80,7 @@ public class ContactsController {
         contactRequest.setRecipient(principal.getName());
         if(contactsService.processContactRequestResponse(contactRequest)) {
             ContactRequestDTO responseDTO = (ContactRequestDTO) dtoConverter.convertToDTO(contactRequest, ContactRequestDTO.class);
-            toUserSender.sendToUserQueue(contactRequest.getContact().getSignature(), "contacts/response", responseDTO);
+            toParticipantSender.sendToUserQueue(contactRequest.getContact().getSignature(), "contacts/response", responseDTO);
             return responseDTO;
         } else {
             return null;//TODO
