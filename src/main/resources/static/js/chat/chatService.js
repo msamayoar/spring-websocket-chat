@@ -2,10 +2,10 @@
  * Created by Andrii on 20.06.2015.
  */
 'use strict';
-servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationService', 'UserService', function(appEvents, chatSocket, notification, userService) {
+servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationService', 'UserService', 'MessagesService', function(appEvents, chatSocket, notification, userService, messagesService) {
     var conversation = {
-        participants: [],
-        message: ""
+        contact: {},
+        participants: []
     };
 
     var getPrefix = function () {
@@ -32,31 +32,48 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
     var notifyConversationUpdated = function () { appEvents.fire(appEvents.CHAT.CONVERSATION.CHANGED); };
 
     var sendGenericChatMessage = function(destination, recipient, recipientType, subject, text) {
+        var message = {
+            from: userService.username(),
+            recipientType: recipientType,
+            recipient: recipient,
+
+            subject: subject,
+            text: text,
+
+            packetId: makeId()
+        };
+
         chatSocket.send(
             destination,
             {},
-            JSON.stringify(
-                {
-                    from: userService.username(),
-                    recipientType: recipientType,
-                    recipient: recipient,
-
-                    subject: subject,
-                    text: text,
-
-                    packetId: makeId()
-                }
-            )
-        )
+            JSON.stringify(message)
+        );
+        message.time = new Date().getTime();
+        messagesService.addMessage(message);
     };
 
     var sendPrivateMessage = function(recipient, subject, text) {
-        sendGenericChatMessage(paths.CHAT.PRIVATE_SEND, recipient, appConst.CHAT.RECIPIENT.TYPE.USER, subject, text);
+        sendGenericChatMessage(paths.CHAT.PRIVATE_SEND, recipient, appConst.CHAT.PARTICIPANT.TYPE.USER, subject, text);
     };
 
     return {
-        participants: conversation.participants,
+        conversation: conversation,
+        getParticipants: function () { return conversation.participants; },
+        getContact: function () { return conversation.contact; },
         notifyConversationUpdated: function(){ notifyConversationUpdated(); },
+
+        switchConversation: function (contact) {
+            conversation.contact = contact;
+            switch(contact.type) {
+                case appConst.CHAT.PARTICIPANT.TYPE.USER:
+                    break;
+                case appConst.CHAT.PARTICIPANT.TYPE.GROUP:
+                    //TODO: Load participants
+                    break;
+            }
+            messagesService.switchConversation(contact);
+            notifyConversationUpdated();
+        },
 
         sendMessage: function (recipient, recipientType, subject, text) {
             sendPrivateMessage(recipient, subject, text);
@@ -67,6 +84,7 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
             chatSocket.subscribe(
                 paths.CHAT.DELIVERY_SUB,
                 function(deliveryStatus) {
+                    messagesService.messageDelivered(deliveryStatus);
                     console.log(JSON.parse(deliveryStatus.body));
                 }
             );
@@ -82,7 +100,7 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
                         conversation.participants[index].typing = parsed.typing;
                     }
                 }
-                notifyConversationUpdated();
+                //notifyConversationUpdated();
             });
 
             chatSocket.subscribe(
@@ -101,7 +119,7 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
                     } else if (presenceStatus == "online") {
                         conversation.participants.unshift({username: presence.login, typing: false});
                     }
-                    notifyConversationUpdated();
+                    //notifyConversationUpdated();
                 }
             );
 

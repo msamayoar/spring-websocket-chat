@@ -37,9 +37,48 @@ servicesModule.factory('MessagesService', ['AppEvents', 'ChatSocket', 'UserServi
         });
     };
 
+    var pushMessage = function (message, status) {
+        var _status = status ? status : appConst.CHAT.MESSAGE.STATUS.PENDING;
+        message.status = _status;
+        messages.push(message);
+    };
+
+    var addMessage = function (message, status) {
+        pushMessage(message, status);
+        reorderMessages();
+        notifyMessagesUpdated();
+    };
+    
+    var findMessage = function (packetId) {
+        for (var i = 0; i < messages.length; i++) {
+            var obj = messages[i];
+            if(obj.packetId == packetId){
+                return messages[i];
+            }
+        }
+        return null;
+    };
+
+    var loadMessages = function (contact) {
+        messages = [];
+        //TODO: load older messages for the contact
+        notifyMessagesUpdated();
+    };
+
     return {
         get: function () { return messages; },
         set: function (_messages) { messages = _messages; },
+        addMessage: function(message, status) { addMessage(message, status); },
+        messageDelivered: function (deliveryStatus) {
+            var status = JSON.parse(deliveryStatus.body);
+            var message = findMessage(status.packetId);
+            if(message){
+                message.status = status.status;
+                message.uuid = status.uuid;
+                message.time = status.time ? status.time : message.time;
+            }
+        },
+        switchConversation: function (contact) { loadMessages(contact); },
         initSubscription: function () {
             chatSocket.subscribe(
                 paths.CHAT.INCOMING_SUB,
@@ -47,9 +86,7 @@ servicesModule.factory('MessagesService', ['AppEvents', 'ChatSocket', 'UserServi
                     var message = JSON.parse(messageStr.body);
                     confirmPrivateMessageDelivery(message);
                     message.priv = true;
-                    messages.push(message);
-                    reorderMessages();
-                    notifyMessagesUpdated();
+                    addMessage(message, appConst.CHAT.MESSAGE.STATUS.DELIVERED);
                 }
             );
 

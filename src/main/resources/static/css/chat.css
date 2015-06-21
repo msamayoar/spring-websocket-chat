@@ -16,6 +16,26 @@ html, body {height: 100%;}
 	overflow: auto;
 }
 
+.chat-box .chat-message-container {
+	width: 100%;
+	padding-right: 1em;
+}
+
+.chat-box .chat-message {
+	clear: both;
+	width: 90%;
+	background: rgba(0, 169, 255, 0.54);
+	border-radius: 5px;
+	padding-left: 1em;
+	margin: 5px 10% 5px 0%;
+}
+
+.chat-box .ownMessage {
+	margin-right: 0%;
+	margin-left: 10%;
+	background: rgba(0, 169, 255, 0.27);
+}
+
 .full-height {
 	height: 100%;
 }
@@ -31,6 +51,14 @@ html, body {height: 100%;}
 .left-side {
 	padding-left: 0px;
 	margin-left: 0px;
+}
+
+.left {
+	text-align: left;
+}
+
+.right {
+	text-align: right;
 }
 
 /*======== Overriding FLAT UI ========*/

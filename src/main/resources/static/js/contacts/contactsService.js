@@ -2,7 +2,7 @@
  * Created by Andrii on 20.06.2015.
  */
 'use strict';
-servicesModule.factory('ContactsService', ['AppEvents', 'ChatSocket', function(appEvents, chatSocket) {
+servicesModule.factory('ContactsService', ['AppEvents', 'ChatSocket', 'ChatService', function(appEvents, chatSocket, chatService) {
     var contacts = [];
     var selectedContact = {};
 
@@ -19,6 +19,16 @@ servicesModule.factory('ContactsService', ['AppEvents', 'ChatSocket', function(a
 
     var parseContacts = function(message) {
         contacts = JSON.parse(message.body);
+    };
+
+    var reorderContacts = function () {
+        contacts.sort(function (c1, c2) {
+            if (c1.signature < c2.signature)
+                return -1;
+            if (c1.signature > c2.signature)
+                return 1;
+            return 0;
+        });
     };
 
     var getContacts = function () {
@@ -77,18 +87,16 @@ servicesModule.factory('ContactsService', ['AppEvents', 'ChatSocket', function(a
         types: function() {
             return appConst.CONTACTS.TYPE;
         },
-        selectContact: function (contact) { selectedContact = contact; notifyContactSelected(); },
-
+        selectContact: function (contact) { selectedContact = contact; chatService.switchConversation(contact); },
         sendInviteUserToContactsRequest: function(login) {
             sendInviteContactsRequest(login);
         },
-
         initSubscription: function () {
-
             chatSocket.subscribe(
                 paths.CONTACTS.ALL_SUB,
                 function(message) {
                     parseContacts(message);
+                    reorderContacts();
                     notifyContactsUpdated();
                 }
             );

@@ -5,10 +5,18 @@ var appConst = (function () {
     return {
         CHAT: {
             SUBJECT_MAX_LENGTH: 140,
-            RECIPIENT: {
-                TYPE: {
+            PARTICIPANT:{
+                TYPE:{
                     USER: 0,
                     GROUP: 1
+                }
+            },
+            MESSAGE: {
+                STATUS: {
+                    PENDING: -1,
+                    ARRIVED: 0,
+                    DELIVERED: 1,
+                    READ: 2
                 }
             }
         },

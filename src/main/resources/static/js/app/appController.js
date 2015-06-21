@@ -4,13 +4,15 @@
 'use strict';
 
 controllersModule.controller('AppController', ['$scope', '$timeout', 'AppEvents', 'InitService', 'UserService', function ($scope, $timeout, appEvents, initService, userService) {
+    var controllerScope = this;
+
     initService.init();
 
-    $scope.username = '';
+    this.username = "";
 
     $scope.$on(appEvents.USER.CHANGED, function () {
         $timeout(function () {
-            $scope.username = userService.user.username;
+            controllerScope.username = userService.user.username;
         })
     });
 }]);

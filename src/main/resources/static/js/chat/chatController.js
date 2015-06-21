@@ -5,25 +5,26 @@ controllersModule.controller('ChatController', ['$scope', '$location', '$interva
     var typing = undefined;
 
     $scope.sendTo = 'everyone';
-    $scope.participants = [];
     $scope.newMessage = '';
     $scope.subject = '';
     $scope.subjectMaxLength = appConst.CHAT.SUBJECT_MAX_LENGTH;
 
-    $scope.selectedContact = {
-        signature: '',
-        type: 0
+    $scope.conversation = {
+        name: "",
+        isGroup: false,
+        participants: [],
+        contact: {}
     };
 
     $scope.sendMessage = function () {
         if($scope.newMessage){
-            if(!$scope.selectedContact.signature) {
+            if(!$scope.conversation.contact.signature) {
                 notification.warn("Please, select somebody from the list of contacts to send a message.");
                 return;
             }
             chat.sendMessage(
-                $scope.selectedContact.signature,
-                $scope.selectedContact.type,
+                $scope.conversation.contact.signature,
+                $scope.conversation.contact.type,
                 $scope.subject,
                 $scope.newMessage
             );
@@ -55,19 +56,24 @@ controllersModule.controller('ChatController', ['$scope', '$location', '$interva
         $scope.sendTo = (username != $scope.sendTo) ? username : 'everyone';
     };
 
-    var switchChatView = function (contact) {
+    var switchConversation = function (conversation) {
+        $scope.conversation.contact = conversation.contact;
+        switch(conversation.contact.type) {
+            case appConst.CHAT.PARTICIPANT.TYPE.USER:
+                $scope.conversation.name = conversation.contact.signature;
+                break;
+            case appConst.CHAT.PARTICIPANT.TYPE.GROUP:
+                $scope.conversation.name = conversation.contact.signature;
+                $scope.conversation.isGroup = true;
+                $scope.conversation.participants = conversation.participants;
+                break;
+        }
 
     };
 
-    $scope.$on(appEvents.CONTACTS.SELECTED, function () {
-        $timeout(function () {
-            $scope.selectedContact = contacts.selected();
-        })
-    });
-
     $scope.$on(appEvents.CHAT.CONVERSATION.CHANGED, function () {
         $timeout(function () {
-            $scope.participants = chat.participants;
+            switchConversation(chat.conversation);
         })
     });
 }]);
