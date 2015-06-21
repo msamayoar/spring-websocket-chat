@@ -61,6 +61,9 @@ public class TestDataController {
                 );
             }
         }
+
+        String azaza = "azaza";
+        userService.registerUser(azaza, "1");
     }
 
 }

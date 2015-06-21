@@ -1,9 +1,15 @@
 package com.tempest.moonlight.server.domain.contacts;
 
+import com.tempest.moonlight.server.annotations.DTO;
 import com.tempest.moonlight.server.domain.HasIntValue;
 import com.tempest.moonlight.server.repository.dao.IdentifiedEntity;
+import com.tempest.moonlight.server.services.dto.EntityDTO;
+import com.tempest.moonlight.server.services.dto.contacts.ContactRequestDTO;
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Yurii on 2015-06-20.
@@ -21,6 +27,8 @@ import java.io.Serializable;
  * <li>{@link #contact} = {GROUP, C}</li>
  * </ul>
  */
+@Component
+@DTO(dto = ContactRequestDTO.class, type = EntityDTO.DtoType.BiDir)
 public class ContactRequest implements IdentifiedEntity<ContactRequest>, Serializable {
 
     public enum Status implements HasIntValue {
@@ -39,6 +47,18 @@ public class ContactRequest implements IdentifiedEntity<ContactRequest>, Seriali
         @Override
         public Integer getValue() {
             return value;
+        }
+
+        private static final Map<Integer, Status> MAP = new HashMap<>();
+
+        static {
+            for (Status status : values()) {
+                MAP.put(status.value, status);
+            }
+        }
+
+        public static Status getByValue(int value) {
+            return MAP.get(value);
         }
     }
 

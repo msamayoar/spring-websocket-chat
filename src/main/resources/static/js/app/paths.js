@@ -45,11 +45,21 @@ var paths = (function () {
         },
         CONTACTS: {
             GET_SEND: send("contacts/get"),
-            ALL_SUB: sub("contacts")
+            ALL_SUB: sub("contacts"),
+
+            INVITE_CONTACT_REQUEST_SEND: send("contacts/request"),
+            INVITE_CONTACT_REQUEST_SUB: sub("contacts/request"),
+
+            INVITE_CONTACT_REPLY_SEND: send("contacts/reply"),
+            INVITE_CONTACT_REPLY_SUB: sub("contacts/reply")
         },
         PRESENCE: {
             PRESENCE_SUB: sub("presence"),
             PRESENCE_SEND: send("presence")
+        },
+        USERS: {
+            MATCHING_SEND: send("users/match"),
+            MATCHING_SUB: sub("users/match")
         },
         ERRORS: {
             SUB: sub("errors")

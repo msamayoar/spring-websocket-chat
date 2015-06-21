@@ -3,19 +3,24 @@
  */
 'use strict';
 
-controllersModule.controller('ContactsController', ['$scope', '$timeout', 'ContactsService', 'AppEvents', function ($scope, $timeout, contacts, appEvents) {
+controllersModule.controller('ContactsController', ['$scope', '$timeout', 'AppEvents', 'ContactsService', 'SearchService', function ($scope, $timeout, appEvents, contactsService, searchService) {
 
     $scope.userContacts = [];
     $scope.selectedContact = {};
 
+    $scope.searchContacts = function() {
+        searchService.searchUsers("er");
+        contactsService.sendInviteUserToContactsRequest("azaza");
+    };
+
     $scope.selectContact = function (contact) {
         $scope.selectedContact = contact;
-        contacts.selectContact(contact);
+        contactsService.selectContact(contact);
     };
 
     $scope.$on(appEvents.CONTACTS.CHANGED, function () {
         $timeout(function () {
-            $scope.userContacts = contacts.get();
+            $scope.userContacts = contactsService.get();
         })
     });
 

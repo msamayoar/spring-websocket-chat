@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 
 /**
  * Created by Yurii on 2015-05-08.
@@ -26,6 +27,9 @@ public class UserServiceImpl implements UserService {
     private UserDAO userDAO;
 
     private MessageDigest messageDigestInstance;
+
+    @Autowired
+    private UserMatcher userMatcher;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -60,6 +64,11 @@ public class UserServiceImpl implements UserService {
         User user = new User(login, encodePassword(password));
         userDAO.save(user);
         return user;
+    }
+
+    @Override
+    public Collection<User> getMatching(String login) {
+        return userMatcher.getMatching(login);
     }
 
     private static String encodePassword(String password) {

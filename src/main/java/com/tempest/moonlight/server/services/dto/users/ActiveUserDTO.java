@@ -1,6 +1,7 @@
-package com.tempest.moonlight.server.services.dto;
+package com.tempest.moonlight.server.services.dto.users;
 
 import com.tempest.moonlight.server.event.UserSession;
+import com.tempest.moonlight.server.services.dto.ServerToClientDTO;
 
 /**
  * Created by Yurii on 2015-06-10.

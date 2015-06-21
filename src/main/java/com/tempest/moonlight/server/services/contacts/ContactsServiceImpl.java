@@ -9,6 +9,7 @@ import com.tempest.moonlight.server.exceptions.contacts.IncomingContactRequestNo
 import com.tempest.moonlight.server.exceptions.contacts.IllegalContactRequestResponseStatusException;
 import com.tempest.moonlight.server.repository.dao.contacts.ContactRequestDAO;
 import com.tempest.moonlight.server.repository.dao.contacts.ContactsDAO;
+import com.tempest.moonlight.server.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,11 @@ public class ContactsServiceImpl implements ContactsService {
     public boolean processContactRequest(ContactRequest request) {
         GenericParticipant recipient = new GenericParticipant(ParticipantType.USER, request.getRecipient());
         GenericParticipant contact = request.getContact();
+
+        if(StringUtils.isEmpty(contact.getSignature())) {
+            contact.setSignature(request.getInitiator());
+            contact.setType(ParticipantType.USER);
+        }
 
         GenericContact recipientContact = new GenericContact(recipient, contact);
         if(contactsDAO.exists(recipientContact)) {
@@ -73,6 +79,7 @@ public class ContactsServiceImpl implements ContactsService {
                     )
             );
         }
+        //TODO handle REJECTED and REVOKED
 
         return false;
     }

@@ -3,12 +3,26 @@
  */
 var appConst = (function () {
     return {
-        CHAT:{
+        CHAT: {
             SUBJECT_MAX_LENGTH: 140,
-            RECIPIENT:{
-                TYPE:{
+            RECIPIENT: {
+                TYPE: {
                     USER: 0,
                     GROUP: 1
+                }
+            }
+        },
+        CONTACTS: {
+            TYPE: {
+                USER: 0,
+                GROUP: 1
+            },
+            REQUEST: {
+                STATUS: {
+                    PENDING: 0,
+                    APPROVED: 1,
+                    REJECTED: 2,
+                    REVOKED: 3
                 }
             }
         }

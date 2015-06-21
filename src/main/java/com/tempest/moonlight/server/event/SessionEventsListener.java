@@ -99,7 +99,7 @@ public class SessionEventsListener implements ApplicationListener<ApplicationEve
     private void broadcastUserPresence(String login, PresenceStatus presenceStatus) {
         logger.error("Sending presence message = [user = " + login + ", status = " + presenceStatus + "]");
 
-        toParticipantSender.sendToUsersQueues(
+        toParticipantSender.sendToUsersQueue(
                 activeUsersService.getActive(
                         CollectionsUtils.convertToSet(
                                 contactsService.getContactsOfUser(login),

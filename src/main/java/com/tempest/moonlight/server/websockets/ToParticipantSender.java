@@ -7,6 +7,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * Created by Yurii on 2015-06-17.
@@ -28,7 +30,11 @@ public class ToParticipantSender {
         sendToUserQueue(participant.getSignature(), destination, message);
     }
 
-    public void sendToUsersQueues(Collection<GenericParticipant> participants, String destination, Object message) {
+    public void sendToUsersQueue(Collection<GenericParticipant> participants, String destination, Object message) {
         participants.forEach(participant -> sendToUserQueue(participant, destination, message));
+    }
+
+    public void sendToUsersQueue(Map<GenericParticipant, ?> participantMessageMap, String destination) {
+        participantMessageMap.forEach((participant, message) -> sendToUserQueue(participant, destination, message));
     }
 }

@@ -1,4 +1,4 @@
-package com.tempest.moonlight.server.services.dto;
+package com.tempest.moonlight.server.services.dto.users;
 
 /**
  * Created by Yurii on 2015-05-08.

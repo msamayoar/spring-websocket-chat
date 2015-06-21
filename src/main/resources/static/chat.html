@@ -40,7 +40,7 @@
                             </li>
                         </ul>
                     </div>-->
-					<h5>Contacts [{{userContacts.length}}]</h5>
+					<h5 ng-click="searchContacts()">Contacts [{{userContacts.length}}]</h5>
 					<div class="share">
 						<ul class="user-contacts">
 							<li ng-repeat="contact in userContacts" href="" ng-click="selectContact(contact);"
@@ -80,14 +80,17 @@
 	    <script src="lib/stomp/lib/stomp.min.js"></script>
 		
 		<!-- App -->
+		<script src="js/app/constants.js"></script>
+		<script src="js/app/paths.js"></script>
+
 		<script src="js/app/app.js"></script>
 		<script src="js/app/appController.js"></script>
 		<script src="js/app/appEvents.js"></script>
+
 		<script src="js/app/initService.js"></script>
 		<script src="js/app/notificationService.js"></script>
-		<script src="js/app/paths.js"></script>
 		<script src="js/app/userService.js"></script>
-		<script src="js/app/constants.js"></script>
+		<script src="js/app/search-service.js"></script>
 
 		<script src="js/chat/chatController.js"></script>
 		<script src="js/chat/chatService.js"></script>
