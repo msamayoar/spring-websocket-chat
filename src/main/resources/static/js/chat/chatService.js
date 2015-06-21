@@ -51,7 +51,7 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
     };
 
     var sendPrivateMessage = function(recipient, subject, text) {
-        sendGenericChatMessage(paths.CHAT.PRIVATE_SEND, recipient, appConst.RECIPIENT.TYPE.USER, subject, text);
+        sendGenericChatMessage(paths.CHAT.PRIVATE_SEND, recipient, appConst.CHAT.RECIPIENT.TYPE.USER, subject, text);
     };
 
     return {
@@ -102,17 +102,6 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
                         conversation.participants.unshift({username: presence.login, typing: false});
                     }
                     notifyConversationUpdated();
-                }
-            );
-
-            chatSocket.subscribe(
-                paths.CHAT.INCOMING_SUB,
-                function (messageStr) {
-                    var message = JSON.parse(messageStr.body);
-                    confirmPrivateMessageDelivery(message);
-                    message.priv = true;
-                    conversation.messages.unshift(message);
-                    updateConversation();
                 }
             );
 

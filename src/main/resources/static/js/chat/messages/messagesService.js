@@ -31,6 +31,12 @@ servicesModule.factory('MessagesService', ['AppEvents', 'ChatSocket', 'UserServi
         appEvents.fire(appEvents.CHAT.MESSAGES.CHANGED);
     };
 
+    var reorderMessages = function () {
+        messages.sort(function (mes1, mes2) {
+            return mes1.time - mes2.time;
+        });
+    };
+
     return {
         get: function () { return messages; },
         set: function (_messages) { messages = _messages; },
@@ -41,7 +47,8 @@ servicesModule.factory('MessagesService', ['AppEvents', 'ChatSocket', 'UserServi
                     var message = JSON.parse(messageStr.body);
                     confirmPrivateMessageDelivery(message);
                     message.priv = true;
-                    messages.unshift(message);
+                    messages.push(message);
+                    reorderMessages();
                     notifyMessagesUpdated();
                 }
             );

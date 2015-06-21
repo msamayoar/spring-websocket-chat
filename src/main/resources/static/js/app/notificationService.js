@@ -4,8 +4,11 @@
 'use strict';
 servicesModule.factory('NotificationService', ['toaster', function(toaster){
     return {
-        error: function (message) {
-            toaster.pop('error', "Error", message);
+        error: function (message, title) {
+            toaster.pop('error', title ? title : "", message);
+        },
+        warn: function (message, title) {
+            toaster.pop('warning', title ? title : "", message);
         }
     };
 }]);

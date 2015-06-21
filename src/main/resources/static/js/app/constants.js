@@ -3,10 +3,13 @@
  */
 var appConst = (function () {
     return {
-        RECIPIENT:{
-            TYPE:{
-                USER: 0,
-                GROUP: 1
+        CHAT:{
+            SUBJECT_MAX_LENGTH: 140,
+            RECIPIENT:{
+                TYPE:{
+                    USER: 0,
+                    GROUP: 1
+                }
             }
         }
     }

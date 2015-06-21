@@ -1,22 +1,34 @@
 'use strict';
 
-controllersModule.controller('ChatController', ['$scope', '$location', '$interval', '$timeout', 'toaster', 'ChatSocket', 'AppEvents', 'ChatService', 'ContactsService', function ($scope, $location, $interval, $timeout, toaster, chatSocket, appEvents, chat, contacts) {
+controllersModule.controller('ChatController', ['$scope', '$location', '$interval', '$timeout', 'ChatSocket', 'AppEvents', 'NotificationService', 'ChatService', 'ContactsService', function ($scope, $location, $interval, $timeout, chatSocket, appEvents, notification, chat, contacts) {
 
     var typing = undefined;
 
     $scope.sendTo = 'everyone';
     $scope.participants = [];
     $scope.newMessage = '';
+    $scope.subject = '';
+    $scope.subjectMaxLength = appConst.CHAT.SUBJECT_MAX_LENGTH;
 
-    $scope.selectedContact = {};
+    $scope.selectedContact = {
+        signature: '',
+        type: 0
+    };
 
     $scope.sendMessage = function () {
-        chat.sendMessage(
-            $scope.selectedContact.signature,
-            "SNAFU",
-            $scope.newMessage
-        );
-        $scope.newMessage = "";
+        if($scope.newMessage){
+            if(!$scope.selectedContact.signature) {
+                notification.warn("Please, select somebody from the list of contacts to send a message.");
+                return;
+            }
+            chat.sendMessage(
+                $scope.selectedContact.signature,
+                $scope.selectedContact.type,
+                $scope.subject,
+                $scope.newMessage
+            );
+        }
+        $scope.newMessage = '';
     };
 
     $scope.startTyping = function () {
@@ -41,6 +53,10 @@ controllersModule.controller('ChatController', ['$scope', '$location', '$interva
 
     $scope.privateSending = function (username) {
         $scope.sendTo = (username != $scope.sendTo) ? username : 'everyone';
+    };
+
+    var switchChatView = function (contact) {
+
     };
 
     $scope.$on(appEvents.CONTACTS.SELECTED, function () {

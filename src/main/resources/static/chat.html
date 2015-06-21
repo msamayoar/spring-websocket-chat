@@ -53,16 +53,18 @@
 					</div>
 				</div>
         		<div class="col-xs-8 chat-box" ng-controller="ChatController">
-					<div class="row" ng-controller="MessagesController">
-						<h4>Messages</h4>
+					<div class="row left-side" ng-controller="MessagesController">
+						<h4>{{selectedContact.signature ? selectedContact.signature : "Select a contact in the list"}}</h4>
 						<div ng-repeat="message in messages">
 							<small print-message></small>
 						</div>
 					</div>
 					<div class="form-group message-input">
-						<!--<span><small>You will send this message to <strong>{{sendTo}}</strong> (click a participant name to send a private message)</small></span>-->
-						<span><small>You will send this message to <strong>{{selectedContact.signature}}</strong> (click a contact name to send a private message)</small></span>
-						<input id="newMessageInput" type="text" class="form-control" placeholder="Write your message and hit enter..." ng-model="newMessage" ng-keyup="$event.keyCode == 13 ? sendMessage() : startTyping()"/>
+						<input id="subjectInput"  type="text" class="form-control" maxlength="{{subjectMaxLength}}"
+							   placeholder="Subject..." ng-model="subject"/>
+						<textarea id="newMessageInput" rows="4" type="text" class="form-control"
+								  placeholder="Write your message and hit enter..." ng-model="newMessage"
+								  ng-keyup="$event.keyCode == 13 ? sendMessage() : startTyping()"></textarea>
 					</div>
         		</div>
         	</div>
