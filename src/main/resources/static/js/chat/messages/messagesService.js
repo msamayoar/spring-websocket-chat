@@ -5,6 +5,10 @@
 
 servicesModule.factory('MessagesService', ['AppEvents', 'ChatSocket', 'UserService', function(appEvents, chatSocket, userService) {
     var messages = [];
+    
+    var parseMessages = function (_messages) {
+        messages = JSON.parse(_messages);
+    };
 
     var confirmDeliveryStatus = function (from, recipientType, packetId, uuid, status) {
         chatSocket.send(
@@ -61,7 +65,14 @@ servicesModule.factory('MessagesService', ['AppEvents', 'ChatSocket', 'UserServi
 
     var loadMessages = function (contact) {
         messages = [];
-        //TODO: load older messages for the contact
+        chatSocket.send(
+            paths.SYNC.PARTICIPANT_SEND,
+            {},
+            JSON.stringify({
+                signature: contact.signature,
+                type: contact.type
+            })
+        );
         notifyMessagesUpdated();
     };
 
@@ -104,6 +115,15 @@ servicesModule.factory('MessagesService', ['AppEvents', 'ChatSocket', 'UserServi
                     for (i = messages.length; i--;) {
                         log("! " + messages[i]);
                     }
+                }
+            );
+
+            chatSocket.subscribe(
+                paths.SYNC.PARTICIPANT_SUB,
+                function (frame) {
+                    parseMessages(frame.body);
+                    reorderMessages();
+                    notifyMessagesUpdated();
                 }
             );
         }

@@ -149,18 +149,6 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
                     }
                 }
             );
-
-            chatSocket.subscribe(
-                paths.SYNC.PARTICIPANT_SUB,
-                function (frame) {
-                    var messages = JSON.parse(frame.body);
-
-                    var length = messages.length;
-                    for (var i = 0; i < length; i++) {
-                        console.log(messages[i]);
-                    }
-                }
-            )
         }
     }
 }]);
