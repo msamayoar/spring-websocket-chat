@@ -13,6 +13,34 @@ servicesModule.factory('ContactsService', ['AppEvents', 'ChatSocket', 'ChatServi
     };
     */
 
+    var findContact = function (username, type) {
+        for (var i = 0; i < contacts.length; i++) {
+            var contact = contacts[i];
+            if(contact.signature === username && contact.type == type){
+                return contact;
+            }
+        }
+        return null;
+    };
+
+    var incrementQueuedMessagesAmount = function (contactUsername, contactType) {
+        var contact = findContact(contactUsername, contactType);
+        if(contact){
+            if(!contact.queuedMessagesAmount){
+                contact.queuedMessagesAmount = 1;
+            } else {
+                contact.queuedMessagesAmount++;
+            }
+        }
+    };
+
+    var resetQueuedMessagesAmount = function (contactUsername, contactType) {
+        var contact = findContact(contactUsername, contactType);
+        if(contact){
+            contact.queuedMessagesAmount = undefined;
+        }
+    };
+
     var fetchContacts = function () {
         chatSocket.send(paths.CONTACTS.GET_SEND);
     };
@@ -87,9 +115,17 @@ servicesModule.factory('ContactsService', ['AppEvents', 'ChatSocket', 'ChatServi
         types: function() {
             return appConst.CONTACTS.TYPE;
         },
-        selectContact: function (contact) { selectedContact = contact; chatService.switchConversation(contact); },
+        selectContact: function (contact) {
+            selectedContact = contact;
+            resetQueuedMessagesAmount(contact.signature, contact.type);
+            chatService.switchConversation(contact);
+        },
         sendInviteUserToContactsRequest: function(login) {
             sendInviteContactsRequest(login);
+        },
+        incrementQueuedMessagesAmount: function (contactUsername, contactType) {
+            incrementQueuedMessagesAmount(contactUsername, contactType);
+            notifyContactsUpdated();
         },
         initSubscription: function () {
             chatSocket.subscribe(

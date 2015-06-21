@@ -91,12 +91,12 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
 
             chatSocket.subscribe("/topic/chat.typing", function (message) {
                 var parsed = JSON.parse(message.body);
-                if (parsed.username == userService.username()) return;
+                if (parsed.username === userService.username()) return;
 
                 for (var index in conversation.participants) {
                     var participant = conversation.participants[index];
 
-                    if (participant.username == parsed.username) {
+                    if (participant.username === parsed.username) {
                         conversation.participants[index].typing = parsed.typing;
                     }
                 }
@@ -110,9 +110,9 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
                     var presenceStatus = presence.status;
                     var login = presence.login;
                     console.log("Presence '" + presenceStatus + "' received from '" + login + "'");
-                    if (presenceStatus == "offline") {
+                    if (presenceStatus === "offline") {
                         for (var index in conversation.participants) {
-                            if (conversation.participants[index].username == login) {
+                            if (conversation.participants[index].username === login) {
                                 conversation.participants.splice(index, 1);
                             }
                         }

@@ -1,7 +1,52 @@
 html, body {height: 100%;}
 
 .container {
-  width: 970px !important;
+	width: 970px !important;
+	height: 100%;
+}
+
+.header-container {
+	height: 10%;
+	min-height: 60px;
+}
+
+.chat-container {
+	height: 90%;
+	min-height: 540px;
+}
+
+.contacts-container {
+	height: 100%;
+	overflow: auto;
+}
+
+.chat-box {
+	height: 100%;
+	padding-left: 0px;
+}
+
+.chat-header {
+	height: 50px;
+}
+
+.chat-box .conversation-topic {
+	font-weight: bold;
+	font-size: 1.5em;
+}
+
+.messages-container {
+	overflow: auto;
+	margin-right: 0px;
+	margin-bottom: 5px;
+	//box-shadow: inset 0 -2px 4px -4px rgba(0, 0, 0, .2);
+	border-radius: 10px;
+	height: 60%;
+	min-height: 295px;
+}
+
+.message-input {
+	margin: 0px;
+	height: 150px;
 }
 
 .navbar h1 {
@@ -9,11 +54,6 @@ html, body {height: 100%;}
 	font-size: 22px;
 	float:left;
 	color: #fff;
-}
-
-.chat-box {
-	height:400px;
-	overflow: auto;
 }
 
 .chat-box .chat-message-container {
@@ -96,7 +136,20 @@ ul.user-contacts {
 	font-weight: bold;
 }
 
-.user-contacts .selected {
-	background-color: red;
+.user-contacts .contact .new-messages-amount {
+	float: right;
+	font-weight: 900;
+	color: rgb(255, 84, 84);
 }
+
+.user-contacts li.selected {
+	background-color: rgba(22, 160, 133, 0.7);
+	border-radius: 10px;
+}
+
+.user-contacts .highlightedContact {
+	background-color: rgba(98, 98, 98, 0.1);
+}
+
+
 /*======== Overriding FLAT UI END ========*/

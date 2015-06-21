@@ -16,19 +16,19 @@
 		<div class="container">
 			<toaster-container></toaster-container>
 			
-			<div class="row">
+			<div class="row header-container">
 				<nav class="navbar navbar-inverse navbar-embossed" role="navigation">
 		            <div class="collapse navbar-collapse" id="navbar-collapse-01">
 		              <h1><a>Spring WebSocket Chat</a></h1>
 		              <ul class="nav navbar-nav navbar-right">           
-		              	<li><a href="stats" target="_blank">Stats</a></li>
+		              	<!--<li><a href="stats" target="_blank">Stats</a></li>-->
 		                <li><a href="logout">Logout ({{appCtrl.username}})</a></li>
 		               </ul>
 		            </div><!-- /.navbar-collapse -->
 		          </nav><!-- /navbar -->
 			</div>
-	        <div class="row">
-				<div class="col-xs-4" ng-controller="ContactsController">
+	        <div class="row chat-container">
+				<div class="col-xs-4 contacts-container" ng-controller="ContactsController">
 					<!--<h4>Participants [{{participants.length}}]</h4>
                     <div class="share">
                         <ul ng-repeat="participant in conversation.participants">
@@ -44,17 +44,20 @@
 					<div class="share">
 						<ul class="user-contacts">
 							<li ng-repeat="contact in userContacts" href="" ng-click="selectContact(contact);"
-									class="contact" ng-class="{selected: contact.signature == selectedContact.signature}">
+									class="contact" ng-class="{highlightedContact: $index%2 === 1, selected: contact.signature == selectedContact.signature}">
 								<span class="input-icon fui-new"></span>
 								<span class="input-icon fui-user" ng-show="!participant.typing"></span>
 								<span class="name">{{contact.signature}}</span>
+								<span class="new-messages-amount">{{contact.queuedMessagesAmount}}</span>
 							</li>
 						</ul>
 					</div>
 				</div>
         		<div class="col-xs-8 chat-box" ng-controller="ChatController">
-					<h4>{{conversation.name ? conversation.name : "Select a contact in the list"}}</h4>
-					<div class="row left-side" ng-controller="MessagesController">
+					<div class="chat-header">
+						<span class="conversation-topic">{{conversation.name ? conversation.name : "Select a contact in the list"}}</span>
+					</div>
+					<div class="row left-side messages-container" ng-controller="MessagesController">
 						<div ng-repeat="message in messages">
 							<small print-message></small>
 						</div>

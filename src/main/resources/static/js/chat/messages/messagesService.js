@@ -3,8 +3,10 @@
  */
 'use strict';
 
-servicesModule.factory('MessagesService', ['AppEvents', 'ChatSocket', 'UserService', function(appEvents, chatSocket, userService) {
+servicesModule.factory('MessagesService', ['$injector', 'AppEvents', 'ChatSocket', 'UserService', function($injector, appEvents, chatSocket, userService) {
     var messages = [];
+
+    var queuedMessages = [];
     
     var parseMessages = function (_messages) {
         messages = JSON.parse(_messages);
@@ -56,7 +58,7 @@ servicesModule.factory('MessagesService', ['AppEvents', 'ChatSocket', 'UserServi
     var findMessage = function (packetId) {
         for (var i = 0; i < messages.length; i++) {
             var obj = messages[i];
-            if(obj.packetId == packetId){
+            if(obj.packetId === packetId){
                 return messages[i];
             }
         }
@@ -74,6 +76,11 @@ servicesModule.factory('MessagesService', ['AppEvents', 'ChatSocket', 'UserServi
             })
         );
         notifyMessagesUpdated();
+    };
+
+    var addMessageToQueue = function (message) {
+        //TODO: Group queued messages by contact to highlight "recently received" messages in chat view
+        queuedMessages.push(message);
     };
 
     return {
@@ -94,10 +101,30 @@ servicesModule.factory('MessagesService', ['AppEvents', 'ChatSocket', 'UserServi
             chatSocket.subscribe(
                 paths.CHAT.INCOMING_SUB,
                 function (messageStr) {
+                    debugger;
                     var message = JSON.parse(messageStr.body);
-                    confirmPrivateMessageDelivery(message);
-                    message.priv = true;
-                    addMessage(message, appConst.CHAT.MESSAGE.STATUS.DELIVERED);
+                    var contactsService = $injector.get("ContactsService");
+
+                    //TODO: Fix inconsistency in message json: recipient/to. Should be either "recipient" or "to"
+
+                    if(message.from !== contactsService.selected().signature && (message.to !== contactsService.selected().signature
+                            || message.recipient !== contactsService.selected().signature)) {
+                        var contactUsername = "";
+                        var contactType = 0;
+                        if(message.recipientType === appConst.CONTACTS.TYPE.USER) {
+                            contactUsername = message.from;
+                            contactType = appConst.CONTACTS.TYPE.USER;
+                        } else if(message.recipientType === appConst.CONTACTS.TYPE.GROUP) {
+                            contactUsername = message.to ? message.to : message.recipient;
+                            contactType = appConst.CONTACTS.TYPE.GROUP;
+                        }
+                        contactsService.incrementQueuedMessagesAmount(contactUsername, contactType);
+                        addMessageToQueue(message);
+                    } else {
+                        confirmPrivateMessageDelivery(message);
+                        message.priv = true;
+                        addMessage(message, appConst.CHAT.MESSAGE.STATUS.DELIVERED);
+                    }
                 }
             );
 

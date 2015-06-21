@@ -20,7 +20,7 @@ springChatLogin.controller('RegistrationController', ['$scope', '$http', '$locat
 
     $scope.messages = {
         registrationInfo: "Enter a login and password to sign up.",
-        loginInfo: "Enter a nickname to join. If you want to become admin use the password 'rockandroll'.",
+        loginInfo: "Enter a nickname to sign in.",
         registrationFailed: "",
         registrationSuccessful: ""
     };
