@@ -8,6 +8,7 @@ import com.tempest.moonlight.server.exceptions.contacts.ContactsException;
 import com.tempest.moonlight.server.exceptions.contacts.InvalidContactException;
 import com.tempest.moonlight.server.services.dto.DtoConverter;
 import com.tempest.moonlight.server.services.dto.contacts.GenericContactDTO;
+import com.tempest.moonlight.server.services.dto.contacts.GenericParticipantDTO;
 import com.tempest.moonlight.server.services.dto.messages.ChatMessageDTO;
 import com.tempest.moonlight.server.services.messages.MessageService;
 import org.apache.log4j.Logger;
@@ -43,11 +44,29 @@ public class SynchronizationController {
         return (Collection<ChatMessageDTO>) dtoConverter.convertToDTOs(messagesOfUser);
     }
 
+    /*
     @MessageMapping("messages/participant")
     @SendToUser(value = "/queue/messages/participant", broadcast = false)
 //    @SendToUser(value = "messages/participant", broadcast = false)
     public Collection<ChatMessageDTO> onGetMessagesWithContactRequest(Principal principal, @Payload GenericContactDTO contactDTO) throws ContactsException {
         GenericParticipant contact = dtoConverter.convertFromDTO(contactDTO).getContact();
+        if(contact == null) {
+            throw new InvalidContactException();
+        }
+        if(contact.getType() == null) {
+            contact.setType(ParticipantType.USER);
+        }
+        String name = principal.getName();
+//        logger.error("onGetMessagesWithContactRequest: messages = " + messagesBetween);
+        return (Collection<ChatMessageDTO>) dtoConverter.convertToDTOs(messageService.getMessagesBetween(name, contact));
+    }
+    */
+
+    @MessageMapping("messages/participant")
+    @SendToUser(value = "/queue/messages/participant", broadcast = false)
+//    @SendToUser(value = "messages/participant", broadcast = false)
+    public Collection<ChatMessageDTO> onGetMessagesWithContactRequest(Principal principal, @Payload GenericParticipantDTO participantDTO) throws ContactsException {
+        GenericParticipant contact = dtoConverter.convertFromDTO(participantDTO);
         if(contact == null) {
             throw new InvalidContactException();
         }

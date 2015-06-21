@@ -1,10 +1,16 @@
 package com.tempest.moonlight.server.domain.contacts;
 
+import com.tempest.moonlight.server.annotations.DTO;
 import com.tempest.moonlight.server.domain.ParticipantType;
+import com.tempest.moonlight.server.services.dto.EntityDTO;
+import com.tempest.moonlight.server.services.dto.contacts.GenericParticipantDTO;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by Yurii on 2015-06-20.
  */
+@DTO(type = EntityDTO.DtoType.S2C, dto = GenericParticipantDTO.class)
+@Component
 public class GenericParticipant {
     private ParticipantType type;
     /**

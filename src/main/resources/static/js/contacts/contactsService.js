@@ -11,15 +11,15 @@ servicesModule.factory('ContactsService', ['AppEvents', 'ChatSocket', function(a
         GROUP: 1
     };
 
-    var fetchCts = function () {
+    var fetchContacts = function () {
         chatSocket.send(paths.CONTACTS.GET_SEND);
     };
 
-    var parseCts = function(message) {
+    var parseContacts = function(message) {
         contacts = JSON.parse(message.body);
     };
 
-    var getCts = function () {
+    var getContacts = function () {
         return contacts;
     };
 
@@ -33,10 +33,10 @@ servicesModule.factory('ContactsService', ['AppEvents', 'ChatSocket', function(a
 
     return {
         set: function(_contacts){ contacts = _contacts; },
-        get: function () { return getCts(); },
+        get: function () { return getContacts(); },
         selected: function () { return selectedContact; },
-        parse: function (message) { parseCts(message); },
-        fetch: function () { fetchCts(); },
+        parse: function (message) { parseContacts(message); },
+        fetch: function () { fetchContacts(); },
         notifyContactSelected: function () { notifyContactsUpdated(); },
         amount: function(){ return contacts.length; },
         types: contactTypes,
@@ -45,11 +45,11 @@ servicesModule.factory('ContactsService', ['AppEvents', 'ChatSocket', function(a
             chatSocket.subscribe(
                 paths.CONTACTS.ALL_SUB,
                 function(message) {
-                    parseCts(message);
+                    parseContacts(message);
                     notifyContactsUpdated();
                 }
             );
         },
-        initData: function () { fetchCts(); }
+        initData: function () { fetchContacts(); }
     }
 }]);

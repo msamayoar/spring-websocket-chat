@@ -1,6 +1,9 @@
 package com.tempest.moonlight.server.services.users;
 
+import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
 import com.tempest.moonlight.server.event.UserSession;
+
+import java.util.Collection;
 
 /**
  * Created by Yurii on 2015-06-10.
@@ -13,7 +16,7 @@ public interface ActiveUsersService {
      */
     boolean addUserSession(UserSession userSession);
 
-    UserSession getBySessionId(String sessionId);
+    Collection<GenericParticipant> getActive(Collection<GenericParticipant> participants);
 
     boolean sessionExists(String sessionId);
 

@@ -1,9 +1,19 @@
 package com.tempest.moonlight.server.services.users;
 
+import com.tempest.moonlight.server.domain.ParticipantType;
+import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
 import com.tempest.moonlight.server.event.UserSession;
 import com.tempest.moonlight.server.repository.dao.ActiveUsersDAO;
+import com.tempest.moonlight.server.util.CollectionsUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by Yurii on 2015-06-10.
@@ -22,9 +32,31 @@ public class ActiveUsersServiceImpl implements ActiveUsersService {
     }
 
     @Override
-    public UserSession getBySessionId(String sessionId) {
-        return activeUsersDAO.get(new UserSession(sessionId));
+    public Collection<GenericParticipant> getActive(Collection<GenericParticipant> participants) {
+//        Map<String, Boolean> usersActive = activeUsersDAO.areUsersActive(
+//                participants.stream().filter(
+//                        participant -> participant.getType() == ParticipantType.USER
+//                ).map(GenericParticipant::getSignature).collect(Collectors.toSet())
+//        );
+//
+//        return participants.stream().filter(
+//                participant -> usersActive.computeIfAbsent(
+//                        participant.getSignature(),
+//                        signature -> false
+//                )
+//        ).collect(Collectors.toSet());
+
+
+        return participants.stream().filter(
+                participant ->
+                        activeUsersDAO.containsSessionsOfUser(participant.getSignature())
+        ).collect(Collectors.toSet());
     }
+
+//    @Override
+//    public UserSession getBySessionId(String sessionId) {
+//        return activeUsersDAO.get(new UserSession(sessionId));
+//    }
 
     @Override
     public boolean sessionExists(String sessionId) {

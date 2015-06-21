@@ -11,22 +11,24 @@ public class MessageDeliveryStatus {
     private String packetId;
     private String uuid;
 
+    private long time;
     private int status;
 
     public MessageDeliveryStatus() {
     }
 
-    public MessageDeliveryStatus(String from, String to, int recipientType, String packetId, String uuid, int status) {
+    public MessageDeliveryStatus(String from, String to, int recipientType, String packetId, String uuid, int status, long time) {
         this.from = from;
         this.recipientType = recipientType;
         this.to = to;
         this.packetId = packetId;
         this.uuid = uuid;
         this.status = status;
+        this.time = time;
     }
 
-    public MessageDeliveryStatus(String from, int recipientType, String to, String packetId, String uuid, MessageStatus status) {
-        this(from, to, recipientType, packetId, uuid, status.getValue());
+    public MessageDeliveryStatus(String from, int recipientType, String to, String packetId, String uuid, MessageStatus status, long time) {
+        this(from, to, recipientType, packetId, uuid, status.getValue(), time);
     }
 
     public MessageDeliveryStatus(ChatMessage message, MessageStatus status) {
@@ -34,7 +36,8 @@ public class MessageDeliveryStatus {
                 message.getFrom(),
                 message.getRecipient().getSignature(), message.getRecipient().getType().getValue(),
                 message.getPacketId(), message.getUuid(),
-                status.getValue()
+                status.getValue(),
+                message.getTime()
         );
     }
 
