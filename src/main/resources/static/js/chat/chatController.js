@@ -48,6 +48,7 @@ controllersModule.controller('ChatController', ['$scope', '$location', '$interva
                 []
             );
         }
+        clearInvite();
     };
 
     $scope.sendMessage = function () {
@@ -96,6 +97,7 @@ controllersModule.controller('ChatController', ['$scope', '$location', '$interva
             case appConst.CHAT.PARTICIPANT.TYPE.USER:
                 $scope.conversation.name = conversation.contact.signature;
                 $scope.conversation.isGroup = false;
+                clearInvite();
                 break;
             case appConst.CHAT.PARTICIPANT.TYPE.GROUP:
                 $scope.conversation.name = conversation.contact.signature;
