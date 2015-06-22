@@ -40,22 +40,46 @@
                             </li>
                         </ul>
                     </div>-->
-					<h5 ng-click="searchContacts()">Contacts [{{userContacts.length}}]</h5>
-					<div class="share">
+					<div ng-show="creatingNewGroup">
+						<input type="text" class="form-control new-group-input inline" placeholder="Enter group id..."
+							   ng-model="newGroupSignature" ng-keyup="$event.keyCode == 13 ? createNewGroup() : ''"/>
+						<i class="fui-cross-circle pointer inline" ng-click="cancelNewGroupCreating()"></i>
+					</div>
+					<h5>Contacts [{{userContacts.length}}] <i class="fui-plus pointer create-group-btn" ng-click="beginCreatingNewGroup()"></i><!--<i class="fui-yelp create-group-btn"></i>--></h5>
+					<div>
+						<input type="text" class="form-control contacts-filter inline" placeholder="Serch..." ng-model="contactsFilter"/>
+						<i class="fui-cross-circle pointer inline cancel-contacts-search-btn" ng-click="cancelSearch()"></i>
+					</div>
+					<div class="share contacts-list" ng-show="contactsLoaded">
 						<ul class="user-contacts">
-							<li ng-repeat="contact in userContacts" href="" ng-click="selectContact(contact);"
+							<li ng-repeat="contact in filteredContacts = (userContacts | filter:contactsFilter)"
+									href="" ng-click="selectContact(contact);"
 									class="contact" ng-class="{highlightedContact: $index%2 === 1, selected: contact.signature == selectedContact.signature}">
-								<span class="input-icon fui-new"></span>
-								<span class="input-icon fui-user" ng-show="!participant.typing"></span>
+								<div class="add-contact-container">
+									<i class="fui-plus-circle add-contact-btn" ng-click="addContact(contact)"
+									   ng-show="contact.found" class="pointer"></i>
+									<i class="fui-check-circle contact-added" ng-show="contact.requestSent"></i>
+								</div>
+								<span class="input-icon fui-check" ng-show="contact.isParticipant"></span>
+								<span class="input-icon fui-yelp" ng-show="isGroup(contact)"></span>
+								<span class="input-icon fui-user" ng-show="isUser(contact)"></span>
 								<span class="name">{{contact.signature}}</span>
-								<span class="new-messages-amount">{{contact.queuedMessagesAmount}}</span>
+								<span class="new-messages-amount" ng-show="contact.queuedMessagesAmount">{{contact.queuedMessagesAmount}} <i class="fui-mail"></i></span>
 							</li>
 						</ul>
+						<div class="full-width global-contacts-search-container" ng-show="!filteredContacts.length && userContacts.length">
+							<div class="btn btn-primary" href="" ng-click="searchGlobalContacts()">Global search</div>
+						</div>
 					</div>
 				</div>
         		<div class="col-xs-8 chat-box" ng-controller="ChatController">
 					<div class="chat-header">
 						<span class="conversation-topic">{{conversation.name ? conversation.name : "Select a contact in the list"}}</span>
+
+						<div class="btn btn-primary" ng-show="conversation.isGroup" style="float: right;" ng-click="inviteUserAction()">Invite</div>
+						<input ng-show="group.inviteUser" type="text" class="form-control" style="float: right; width: 60px; margin-left: 5px;"
+							   placeholder="Enter user name..."
+							   ng-model="group.inviteUserUsername" ng-keyup="$event.keyCode == 13 ? inviteUser() : ''"/>
 					</div>
 					<div class="row left-side messages-container" ng-controller="MessagesController">
 						<div ng-repeat="message in messages">

@@ -15,9 +15,31 @@ html, body {height: 100%;}
 	min-height: 540px;
 }
 
+.new-group-input {
+	width: 90%;
+}
+
+.create-group-btn {
+	color: rgba(22, 141, 116, 0.9);
+	font-size: 0.7em;
+}
+
+.create-group-btn:hover {
+	color: rgba(35, 214, 171, 1);
+}
+
 .contacts-container {
 	height: 100%;
+}
+
+.contacts-list {
 	overflow: auto;
+	height: 80%;
+}
+
+.global-contacts-search-container {
+	text-align: center;
+	padding-top: 5px;
 }
 
 .chat-box {
@@ -64,7 +86,7 @@ html, body {height: 100%;}
 .chat-box .chat-message {
 	clear: both;
 	width: 90%;
-	background: rgba(0, 169, 255, 0.54);
+	background: rgba(85, 183, 183, 0.75);
 	border-radius: 5px;
 	padding-left: 1em;
 	margin: 5px 10% 5px 0%;
@@ -73,7 +95,7 @@ html, body {height: 100%;}
 .chat-box .ownMessage {
 	margin-right: 0%;
 	margin-left: 10%;
-	background: rgba(0, 169, 255, 0.27);
+	background: rgba(126, 200, 200, 0.34);
 }
 
 .full-height {
@@ -134,6 +156,33 @@ ul.user-contacts {
 
 .user-contacts .contact .name {
 	font-weight: bold;
+}
+
+.user-contacts .contact .add-contact-container {
+	color: rgba(22, 141, 116, 0.9);
+	margin-right: 15px;
+	font-weight: bold;
+	float: left;
+}
+
+.user-contacts .contact .add-contact-container .add-contact-btn:hover {
+	color: rgba(35, 214, 171, 1);
+}
+
+.user-contacts .contact .add-contact-container .contact-added {
+	color: rgb(52, 73, 94);
+}
+
+.contacts-filter {
+	width: 90%;
+}
+
+.inline {
+	display: inline;
+}
+
+.pointer {
+	cursor: pointer;
 }
 
 .user-contacts .contact .new-messages-amount {

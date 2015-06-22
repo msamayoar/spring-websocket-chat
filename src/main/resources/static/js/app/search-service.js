@@ -25,6 +25,10 @@ servicesModule.factory('SearchService', ['AppEvents', 'ChatSocket', function(app
         )
     };
 
+    var notifyUsersFound = function () {
+        appEvents.fire(appEvents.USER.FOUND);
+    };
+
     var contactsRequest = function(login) {
         chatSocket.send(
             paths.USERS
@@ -32,11 +36,13 @@ servicesModule.factory('SearchService', ['AppEvents', 'ChatSocket', function(app
     };
 
     return {
+        getFound: function () { return foundUsers.users; },
         initSubscription: function() {
             chatSocket.subscribe(
                 paths.USERS.MATCHING_SUB,
                 function(frame) {
                     parseUsers(frame);
+                    notifyUsersFound()
                 }
             )
         },

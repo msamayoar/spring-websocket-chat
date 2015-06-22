@@ -13,11 +13,15 @@ servicesModule.factory('AppEvents', ['$rootScope', function($rootScope){
             }
         },
         USER: {
-            CHANGED: "userChanged"
+            CHANGED: "userChanged",
+            FOUND: "contactsFound"
         },
         CONTACTS: {
             CHANGED: "contactsChanged",
-            SELECTED: "contactSelected"
+            SELECTED: "contactSelected",
+            GROUP: {
+                CHANGED: "groupCreated"
+            }
         },
         fire: function (event) {
             $rootScope.$broadcast(event);

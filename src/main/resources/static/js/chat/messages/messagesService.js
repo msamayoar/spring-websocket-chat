@@ -101,7 +101,6 @@ servicesModule.factory('MessagesService', ['$injector', 'AppEvents', 'ChatSocket
             chatSocket.subscribe(
                 paths.CHAT.INCOMING_SUB,
                 function (messageStr) {
-                    debugger;
                     var message = JSON.parse(messageStr.body);
                     var contactsService = $injector.get("ContactsService");
 

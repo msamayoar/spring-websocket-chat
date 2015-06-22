@@ -4,10 +4,11 @@
 'use strict';
 servicesModule.factory('GroupsService', ['AppEvents', 'ChatSocket', function(appEvents, chatSocket) {
 
+    var group = {};
 
     var parseGroupParticipants = function(frame) {
-        var groupWithParticipants = JSON.parse(frame.body);
-        console.log(groupWithParticipants);
+        group  = JSON.parse(frame.body);
+        console.log(group);
     };
 
     var createGroup = function(groupSignature) {
@@ -35,6 +36,7 @@ servicesModule.factory('GroupsService', ['AppEvents', 'ChatSocket', function(app
     };
 
     var inviteAndKickParticipants = function(groupSignature, invite, kick) {
+        debugger;
         chatSocket.send(
             paths.GROUPS.CHANGES_SEND,
             JSON.stringify(
@@ -47,14 +49,13 @@ servicesModule.factory('GroupsService', ['AppEvents', 'ChatSocket', function(app
         )
     };
 
+    var notifyGroupCreated = function () {
+        appEvents.fire(appEvents.CONTACTS.GROUP.CHANGED);
+    };
+
     return {
-        initSubscription: function() {
-            chatSocket.subscribe(
-                paths.GROUPS.GROUPS_SUB,
-                function(frame) {
-                    parseGroupParticipants(frame);
-                }
-            )
+        get: function () {
+            return group;
         },
         createGroup: function(groupSignature) {
             createGroup(groupSignature);
@@ -64,6 +65,16 @@ servicesModule.factory('GroupsService', ['AppEvents', 'ChatSocket', function(app
         },
         inviteAndKickParticipants: function(groupSignature, usersToInvite, usersToKick) {
             inviteAndKickParticipants(groupSignature, usersToInvite, usersToKick);
+        },
+        initSubscription: function() {
+            chatSocket.subscribe(
+                paths.GROUPS.GROUPS_SUB,
+                function(frame) {
+                    parseGroupParticipants(frame);
+                    //chatService.setParticipants(group.participants);
+                    notifyGroupCreated();
+                }
+            )
         }
     }
 }]);

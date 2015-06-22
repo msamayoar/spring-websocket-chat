@@ -111,6 +111,10 @@ servicesModule.factory('ContactsService', ['AppEvents', 'ChatSocket', 'ChatServi
         parse: function (message) { parseContacts(message); },
         fetch: function () { fetchContacts(); },
         notifyContactSelected: function () { notifyContactsUpdated(); },
+        reload: function () {
+            fetchContacts();
+            notifyContactsUpdated();
+        },
         amount: function(){ return contacts.length; },
         types: function() {
             return appConst.CONTACTS.TYPE;

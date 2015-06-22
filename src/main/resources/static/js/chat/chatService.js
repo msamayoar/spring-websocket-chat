@@ -63,6 +63,7 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
     return {
         conversation: conversation,
         getParticipants: function () { return conversation.participants; },
+        setParticipants: function (participants) { conversation.participants = participants; notifyConversationUpdated(); },
         getContact: function () { return conversation.contact; },
         notifyConversationUpdated: function(){ notifyConversationUpdated(); },
 
@@ -70,6 +71,7 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
             conversation.contact = contact;
             switch(contact.type) {
                 case appConst.CHAT.PARTICIPANT.TYPE.USER:
+                    conversation.participants = [];
                     break;
                 case appConst.CHAT.PARTICIPANT.TYPE.GROUP:
                     //TODO: Load participants
@@ -78,7 +80,6 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
                      * 2) listen to paths.GROUP.GROUPS_SUB (see in groupsService.initSubscription)
                      */
                     groupsService.getParticipants(contact.signature);
-
                     break;
             }
             messagesService.switchConversation(contact);

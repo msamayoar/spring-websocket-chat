@@ -9,6 +9,9 @@ servicesModule.factory('NotificationService', ['toaster', function(toaster){
         },
         warn: function (message, title) {
             toaster.pop('warning', title ? title : "", message);
+        },
+        success: function (message, title) {
+            toaster.pop('success', title ? title : "", message);
         }
     };
 }]);

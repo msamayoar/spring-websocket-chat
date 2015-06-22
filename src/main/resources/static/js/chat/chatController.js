@@ -1,6 +1,6 @@
 'use strict';
 
-controllersModule.controller('ChatController', ['$scope', '$location', '$interval', '$timeout', 'ChatSocket', 'AppEvents', 'NotificationService', 'ChatService', 'ContactsService', function ($scope, $location, $interval, $timeout, chatSocket, appEvents, notification, chat, contacts) {
+controllersModule.controller('ChatController', ['$scope', '$location', '$interval', '$timeout', 'ChatSocket', 'AppEvents', 'NotificationService', 'ChatService', 'ContactsService', 'GroupsService', function ($scope, $location, $interval, $timeout, chatSocket, appEvents, notification, chat, contacts, groupsService) {
 
     var typing = undefined;
 
@@ -14,6 +14,40 @@ controllersModule.controller('ChatController', ['$scope', '$location', '$interva
         isGroup: false,
         participants: [],
         contact: {}
+    };
+
+    $scope.group = {
+        inviteUser: false,
+        inviteUserUsername: ""
+    };
+
+    var clearInvite = function () {
+        $scope.group.inviteUser = false;
+        $scope.group.inviteUserUsername = "";
+    };
+
+    $scope.inviteUserAction = function () {
+        debugger;
+        if($scope.group.inviteUser) {
+            $scope.inviteUser();
+            clearInvite();
+        } else {
+            $scope.group.inviteUser = true;
+        }
+    };
+
+    $scope.inviteUser = function () {
+        debugger;
+        if($scope.group.inviteUserUsername) {
+            groupsService.inviteAndKickParticipants(
+                $scope.conversation.contact.signature,
+                [{
+                    signature: $scope.group.inviteUserUsername,
+                    type: appConst.CONTACTS.TYPE.USER
+                }],
+                []
+            );
+        }
     };
 
     $scope.sendMessage = function () {
