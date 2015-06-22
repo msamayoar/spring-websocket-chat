@@ -28,6 +28,7 @@ var paths = (function () {
     return {
         CHAT: {
             PRIVATE_SEND: send("chat/private"),
+            GROUP_SEND: send("chat/group"),
             INCOMING_SUB: sub("chat/incoming"),
 
             DELIVERY_SUB: sub("messages/delivery"),
@@ -37,7 +38,7 @@ var paths = (function () {
             GROUPS_SUB: sub("groups"),
 
             CREATE_SEND: send("groups/create"),
-
+            GET_PARTICIPANTS_SEND: send("groups/get"),
             CHANGES_SEND: send("groups/changes")
         },
         SYNC: {

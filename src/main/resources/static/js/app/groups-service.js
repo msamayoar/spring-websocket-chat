@@ -22,6 +22,18 @@ servicesModule.factory('GroupsService', ['AppEvents', 'ChatSocket', function(app
         )
     };
 
+    var getGroupParticipants = function(groupSignature) {
+        chatSocket.send(
+            paths.GROUPS.GET_PARTICIPANTS_SEND,
+            {},
+            JSON.stringify(
+                {
+                    signature: groupSignature
+                }
+            )
+        );
+    };
+
     var inviteAndKickParticipants = function(groupSignature, invite, kick) {
         chatSocket.send(
             paths.GROUPS.CHANGES_SEND,
@@ -46,6 +58,9 @@ servicesModule.factory('GroupsService', ['AppEvents', 'ChatSocket', function(app
         },
         createGroup: function(groupSignature) {
             createGroup(groupSignature);
+        },
+        getParticipants: function(groupSignature) {
+            getGroupParticipants(groupSignature);
         },
         inviteAndKickParticipants: function(groupSignature, usersToInvite, usersToKick) {
             inviteAndKickParticipants(groupSignature, usersToInvite, usersToKick);

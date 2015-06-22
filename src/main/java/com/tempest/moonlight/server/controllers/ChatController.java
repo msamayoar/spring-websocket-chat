@@ -7,7 +7,9 @@ import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
 import com.tempest.moonlight.server.domain.messages.MessageDeliveryStatus;
 import com.tempest.moonlight.server.domain.messages.MessageStatus;
 import com.tempest.moonlight.server.exceptions.chat.*;
+import com.tempest.moonlight.server.exceptions.groups.GroupNotExistsException;
 import com.tempest.moonlight.server.repository.dao.users.ActiveUsersDAO;
+import com.tempest.moonlight.server.services.groups.GroupService;
 import com.tempest.moonlight.server.services.messages.MessageService;
 import com.tempest.moonlight.server.services.users.UserService;
 import com.tempest.moonlight.server.services.dto.DtoConverter;
@@ -54,6 +56,9 @@ public class ChatController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private GroupService groupService;
+
     /*
 	@SubscribeMapping("/chat.participants")
 	public Collection<String> retrieveParticipants(Principal principal) {
@@ -65,20 +70,20 @@ public class ChatController {
 
     @MessageMapping("/chat/private")
     public void onPrivateMessage(Principal sender, Message message, @Payload ChatMessageDTO chatMessageDTO) throws MessageHandlingException {
-        processUserPrivateMessage(sender, message, chatMessageDTO);
+        processPrivateMessage(sender, message, chatMessageDTO);
     }
 
     @MessageMapping("/chat/private/{login}")
     public void onPrivateMessage(Principal sender, Message message, @Payload ChatMessageDTO chatMessageDTO, @DestinationVariable("login") String login) throws MessageHandlingException {
         chatMessageDTO.setRecipient(login);
-        processUserPrivateMessage(sender, message, chatMessageDTO);
+        processPrivateMessage(sender, message, chatMessageDTO);
     }
 
-    private void processUserPrivateMessage(Principal sender, Message message, ChatMessageDTO chatMessageDTO) throws MessageHandlingException {
+    private void processPrivateMessage(Principal sender, Message message, ChatMessageDTO chatMessageDTO) throws MessageHandlingException {
         ChatMessage chatMessage = dtoConverter.convertFromDTO(chatMessageDTO, ChatMessage.class);
         chatMessage.setFrom(sender.getName());
 
-        chatMessage = onUserPrivateMessageInner(chatMessage, message);
+        chatMessage = onUserPrivateMessageInner(chatMessage, message, ParticipantType.USER);
 
         sendDeliveryStatus(chatMessage.getFrom(), new MessageDeliveryStatus(chatMessage, MessageStatus.ARRIVED));
         toParticipantSender.sendToUserQueue(
@@ -88,12 +93,18 @@ public class ChatController {
         );
     }
 
-    private ChatMessage onUserPrivateMessageInner(ChatMessage chatMessage, Message message) throws MessageHandlingException {
-        GenericParticipant recipient = checkSetUpMessage(chatMessage, message).getRecipient();
+    private ChatMessage onUserPrivateMessageInner(ChatMessage chatMessage, Message message, ParticipantType recipientType) throws MessageHandlingException {
+        GenericParticipant recipient = checkSetUpMessage(chatMessage, message, recipientType).getRecipient();
 
         String recipientSignature = recipient.getSignature();
-        if(!userService.checkUserExists(recipientSignature)) {
-            throw new UserDoesNotExistException(recipientSignature);
+        if(recipientType == ParticipantType.USER) {
+            if (!userService.checkUserExists(recipientSignature)) {
+                throw new RecipientDoesNotExistException(ParticipantType.USER, recipientSignature);
+            }
+        } else if(recipientType == ParticipantType.GROUP) {
+            if(!groupService.existsGroup(recipientSignature)) {
+                throw new RecipientDoesNotExistException(ParticipantType.GROUP, recipientSignature);
+            }
         }
 
         logger.info("user sent message = " + chatMessage);
@@ -102,15 +113,15 @@ public class ChatController {
         return chatMessage;
     }
 
-    public static ChatMessage checkSetUpMessage(ChatMessage chatMessage, Message message) throws MessageHandlingException {
+    public static ChatMessage checkSetUpMessage(ChatMessage chatMessage, Message message, ParticipantType type) throws MessageHandlingException {
         if(StringUtils.isEmpty(chatMessage.getPacketId())) {
             throw new EmptyMessagePacketIdException();
         }
 
         GenericParticipant recipient = chatMessage.getRecipient();
         if(recipient.getType() == null) {
-            chatMessage.setType(ParticipantType.USER);
-        } else if(recipient.getType() != ParticipantType.USER) {
+            chatMessage.setType(type);
+        } else if(recipient.getType() != type) {
             throw new IllegalMessageRecipientType(recipient.getType());
         }
 
@@ -128,11 +139,6 @@ public class ChatController {
         return chatMessage;
     }
 
-    @MessageMapping("/chat/group")
-    public void onGroupMessage(Principal sender, Message message, @Payload ChatMessageDTO chatMessageDTO) throws MessageHandlingException {
-        processUserPrivateMessage(sender, message, chatMessageDTO);
-    }
-
     @MessageMapping("messages/delivery")
     public void onMessageDeliveryStatus(Principal principal, MessageDeliveryStatus deliveryStatus) throws MessageHandlingException {
         deliveryStatus.setTo(principal.getName());
@@ -143,6 +149,25 @@ public class ChatController {
 
     private void sendDeliveryStatus(String to, MessageDeliveryStatus deliveryStatus) {
         toParticipantSender.sendToUserQueue(to, "messages/delivery", deliveryStatus);
+    }
+
+    @MessageMapping("/chat/group")
+    public void onGroupMessage(Principal sender, Message message, @Payload ChatMessageDTO chatMessageDTO) throws MessageHandlingException {
+        processGroupMessage(sender, message, chatMessageDTO);
+    }
+
+    private void processGroupMessage(Principal sender, Message message, ChatMessageDTO chatMessageDTO) throws MessageHandlingException {
+        ChatMessage chatMessage = dtoConverter.convertFromDTO(chatMessageDTO);
+        chatMessage.setFrom(sender.getName());
+
+        chatMessage = onUserPrivateMessageInner(chatMessage, message, ParticipantType.GROUP);
+
+        sendDeliveryStatus(chatMessage.getFrom(), new MessageDeliveryStatus(chatMessage, MessageStatus.ARRIVED));
+        toParticipantSender.sendToUserQueue(
+                chatMessage.getRecipient().getSignature(),
+                "chat/incoming",
+                dtoConverter.convertToDTO(chatMessage, ChatMessageDTO.class)
+        );
     }
 
 //    @MessageMapping("/chat.message")
@@ -158,7 +183,7 @@ public class ChatController {
 //        }
 //
 //        if(!userService.checkUserExists(login)) {
-//            throw new UserDoesNotExistException(login);
+//            throw new RecipientDoesNotExistException(login);
 //        }
 //
 //        messageService.saveMessage(setUpMessage(chatMessage, principal, login, ParticipantType.USER, message));

@@ -2,7 +2,7 @@
  * Created by Andrii on 20.06.2015.
  */
 'use strict';
-servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationService', 'UserService', 'MessagesService', function(appEvents, chatSocket, notification, userService, messagesService) {
+servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationService', 'UserService', 'MessagesService', 'GroupsService', function(appEvents, chatSocket, notification, userService, messagesService, groupsService) {
     var conversation = {
         contact: {},
         participants: []
@@ -56,6 +56,10 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
         sendGenericChatMessage(paths.CHAT.PRIVATE_SEND, recipient, appConst.CHAT.PARTICIPANT.TYPE.USER, subject, text);
     };
 
+    var sendGroupMessage = function(recipient, subject, text) {
+        sendGenericChatMessage(paths.CHAT.GROUP_SEND, recipient, appConst.CHAT.PARTICIPANT.TYPE.GROUP, subject, text);
+    };
+
     return {
         conversation: conversation,
         getParticipants: function () { return conversation.participants; },
@@ -69,6 +73,12 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
                     break;
                 case appConst.CHAT.PARTICIPANT.TYPE.GROUP:
                     //TODO: Load participants
+                    /**
+                     * 1) call: groupsService.getParticipants(groupSignature)
+                     * 2) listen to paths.GROUP.GROUPS_SUB (see in groupsService.initSubscription)
+                     */
+                    groupsService.getParticipants(contact.signature);
+
                     break;
             }
             messagesService.switchConversation(contact);
@@ -76,7 +86,14 @@ servicesModule.factory('ChatService', ['AppEvents', 'ChatSocket', 'NotificationS
         },
 
         sendMessage: function (recipient, recipientType, subject, text) {
-            sendPrivateMessage(recipient, subject, text);
+            switch (recipientType) {
+                case appConst.CHAT.PARTICIPANT.TYPE.USER:
+                    sendPrivateMessage(recipient, subject, text);
+                    break;
+                case appConst.CHAT.PARTICIPANT.TYPE.GROUP:
+                    sendGroupMessage(recipient, subject, text);
+                    break;
+            }
         },
 
         initSubscription: function () {

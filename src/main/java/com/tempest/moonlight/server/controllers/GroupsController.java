@@ -52,8 +52,8 @@ public class GroupsController {
 
     @MessageMapping("groups/create")
     @SendToUser("/queue/groups")
-    public GroupParticipantsDTO onCreateGroup(Principal principal, @Payload GenericParticipantDTO groupParticipantDto) throws GroupsException {
-        String groupSignature = groupParticipantDto.getSignature();
+    public GroupParticipantsDTO onCreateGroup(Principal principal, @Payload GenericParticipantDTO genericParticipantDTO) throws GroupsException {
+        String groupSignature = genericParticipantDTO.getSignature();
         if(StringUtils.isEmpty(groupSignature)) {
             throw new InvalidGroupSignatureException();
         }
@@ -163,6 +163,28 @@ public class GroupsController {
         return new GroupParticipantsDTO(
                 group,
                 (List<GenericParticipantDTO>) dtoConverter.convertToDTOs(updatedParticipants)
+        );
+    }
+
+    @MessageMapping("groups/get")
+    @SendToUser("queue/groups")
+    public GroupParticipantsDTO onGetGroupParticipants(Principal principal, GenericParticipantDTO genericParticipantDTO) throws GroupsException {
+        String groupSignature = genericParticipantDTO.getSignature();
+        if(StringUtils.isEmpty(groupSignature)) {
+            throw new InvalidGroupSignatureException();
+        }
+        String principalName = principal.getName();
+
+        Group group = checkGetGroup(groupSignature, true);
+        if(!group.isOpened()) {
+            if(!groupService.checkUserBelongsToGroup(group, principalName)) {
+                throw new IllegalGroupAccessException(groupSignature);
+            }
+        }
+
+        return new GroupParticipantsDTO(
+                groupSignature,
+                (List<GenericParticipantDTO>) dtoConverter.convertToDTOs(groupService.getParticipants(groupSignature))
         );
     }
 

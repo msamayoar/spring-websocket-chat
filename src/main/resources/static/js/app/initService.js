@@ -3,7 +3,7 @@
  */
 'use strict';
 servicesModule.factory('InitService',
-    ['ChatSocket', 'NotificationService', 'ChatService', 'ContactsService', 'UserService', 'MessagesService',  'SearchService', function(chatSocket, notification, chat, contacts, userService, messages, searchService) {
+    ['ChatSocket', 'NotificationService', 'ChatService', 'ContactsService', 'UserService', 'MessagesService',  'SearchService', 'GroupsService', function(chatSocket, notification, chat, contacts, userService, messages, searchService, groupsService) {
 
     var initStompClient = function () {
         chatSocket.init('/ws');
@@ -19,6 +19,7 @@ servicesModule.factory('InitService',
             contacts.initData();
 
             searchService.initSubscription();
+            groupsService.initSubscription();
         }, function (error) {
             notification.error('Connection error ' + error);
         });
