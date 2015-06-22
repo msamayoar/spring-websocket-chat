@@ -27,7 +27,7 @@ controllersModule.controller('ChatController', ['$scope', '$location', '$interva
     };
 
     $scope.inviteUserAction = function () {
-        debugger;
+        //debugger;
         if($scope.group.inviteUser) {
             $scope.inviteUser();
             clearInvite();
@@ -37,7 +37,7 @@ controllersModule.controller('ChatController', ['$scope', '$location', '$interva
     };
 
     $scope.inviteUser = function () {
-        debugger;
+        //debugger;
         if($scope.group.inviteUserUsername) {
             groupsService.inviteAndKickParticipants(
                 $scope.conversation.contact.signature,

@@ -36,9 +36,10 @@ servicesModule.factory('GroupsService', ['AppEvents', 'ChatSocket', function(app
     };
 
     var inviteAndKickParticipants = function(groupSignature, invite, kick) {
-        debugger;
+        //debugger;
         chatSocket.send(
             paths.GROUPS.CHANGES_SEND,
+            {},
             JSON.stringify(
                 {
                     signature: groupSignature,

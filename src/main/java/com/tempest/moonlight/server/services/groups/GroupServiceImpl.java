@@ -33,8 +33,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public Group createGroup(String groupSignature) {
-        Group group = new Group();
-        group.setSignature(groupSignature);
+        Group group = new Group(groupSignature);
         group.setEmpty(true);
         group.setLastChangeTime(System.currentTimeMillis());
         groupDAO.save(group);

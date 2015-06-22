@@ -43,13 +43,13 @@ public class ContactsServiceImpl implements ContactsService {
         }
 
         GenericContact recipientContact = new GenericContact(recipient, contact);
-        if(contactsDAO.exists(recipientContact)) {
-            return false;
-        }
+//        if(contactsDAO.exists(recipientContact)) {
+//            return false;
+//        }
 
-        if(contactsDAO.exists(recipientContact.invert())) {
-            return false;
-        }
+//        if(contactsDAO.exists(recipientContact.invert())) {
+//            return false;
+//        }
 
         request.setTime(System.currentTimeMillis());
         request.setStatus(ContactRequest.Status.PENDING);

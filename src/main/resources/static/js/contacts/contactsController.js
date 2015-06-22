@@ -151,7 +151,7 @@ controllersModule.controller('ContactsController', ['$scope', '$timeout', 'AppEv
 
     $scope.$on(appEvents.CONTACTS.GROUP.CHANGED, function () {
         $timeout(function () {
-            debugger;
+            //debugger;
             groupChanged(groupsService.get());
         })
     });
