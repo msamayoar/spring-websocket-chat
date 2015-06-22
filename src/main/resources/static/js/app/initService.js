@@ -12,14 +12,15 @@ servicesModule.factory('InitService',
             userService.user.username = frame.headers['user-name'];
             userService.notifyUpdated();
 
-            chat.initSubscription();
-            messages.initSubscription();
+            groupsService.initSubscription();
 
             contacts.initSubscription();
             contacts.initData();
 
+            chat.initSubscription();
+            messages.initSubscription();
+
             searchService.initSubscription();
-            groupsService.initSubscription();
         }, function (error) {
             notification.error('Connection error ' + error);
         });

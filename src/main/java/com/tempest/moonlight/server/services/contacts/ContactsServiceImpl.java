@@ -91,7 +91,7 @@ public class ContactsServiceImpl implements ContactsService {
     @Override
     public boolean addContact(GenericContact contact) {
         GenericContact inverted = contact.invert();
-        if(contactsDAO.exists(contact) || contactsDAO.exists(inverted)) {
+        if(!(contactsDAO.exists(contact) && contactsDAO.exists(inverted))) {
             contactsDAO.save(contact);
             contactsDAO.save(inverted);
             return true;

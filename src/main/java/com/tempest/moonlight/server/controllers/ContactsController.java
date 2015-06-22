@@ -48,7 +48,8 @@ public class ContactsController {
     }
 
     private Collection<GenericParticipantDTO> getContactsOfUser(String login) {
-        Set<GenericParticipant> participants = new HashSet<>(ContactsService.asGenericParticipants(contactsService.getContactsOfUser(login)));
+        Collection<GenericContact> contactsOfUser = contactsService.getContactsOfUser(login);
+        Set<GenericParticipant> participants = new HashSet<>(ContactsService.asGenericParticipants(contactsOfUser));
         logger.info("Contacts of user = [login = " + login + ", contacts = " + participants);
         return (Collection<GenericParticipantDTO>) dtoConverter.convertToDTOs(participants);
     }

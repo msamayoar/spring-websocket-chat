@@ -50,7 +50,7 @@ servicesModule.factory('GroupsService', ['AppEvents', 'ChatSocket', function(app
     return {
         initSubscription: function() {
             chatSocket.subscribe(
-                paths.GROUP.GROUPS_SUB,
+                paths.GROUPS.GROUPS_SUB,
                 function(frame) {
                     parseGroupParticipants(frame);
                 }
