@@ -8,7 +8,7 @@ import com.tempest.moonlight.server.domain.messages.MessageStatus;
 import com.tempest.moonlight.server.exceptions.chat.IllegalMessageDeliveryStatusException;
 import com.tempest.moonlight.server.exceptions.chat.MessageDoesNotExistsException;
 import com.tempest.moonlight.server.exceptions.chat.MessageHandlingException;
-import com.tempest.moonlight.server.repository.dao.MessageDAO;
+import com.tempest.moonlight.server.repository.dao.messages.MessageDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;

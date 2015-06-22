@@ -1,9 +1,10 @@
-package com.tempest.moonlight.server.repository.dao;
+package com.tempest.moonlight.server.repository.dao.messages;
 
 import com.tempest.moonlight.server.domain.ParticipantType;
 import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
 import com.tempest.moonlight.server.domain.messages.ChatMessage;
 import com.tempest.moonlight.server.domain.MessageKey;
+import com.tempest.moonlight.server.repository.dao.DAO;
 
 import java.util.Collection;
 

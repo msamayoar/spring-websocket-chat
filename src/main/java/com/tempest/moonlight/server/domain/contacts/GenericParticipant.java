@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 /**
  * Created by Yurii on 2015-06-20.
  */
-@DTO(type = EntityDTO.DtoType.S2C, dto = GenericParticipantDTO.class)
+@DTO(type = EntityDTO.DtoType.BiDir, dto = GenericParticipantDTO.class)
 @Component
 public class GenericParticipant {
     private ParticipantType type;

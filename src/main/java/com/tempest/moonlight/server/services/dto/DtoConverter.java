@@ -47,7 +47,7 @@ public interface DtoConverter {
 
     <T> T convertFromDTO(ClientToServerDTO<T> dto) throws DtoException;
 
-    default <T> Collection<T> convertFromDTO(Collection<? extends ClientToServerDTO<T>> dtos) {
+    default <T> Collection<T> convertFromDTOs(Collection<? extends ClientToServerDTO<T>> dtos) {
         return CollectionsUtils.convertToList(
                 dtos,
                 dto -> {

@@ -33,6 +33,13 @@ var paths = (function () {
             DELIVERY_SUB: sub("messages/delivery"),
             DELIVERY_SEND: send("messages/delivery")
         },
+        GROUPS: {
+            GROUPS_SUB: sub("groups"),
+
+            CREATE_SEND: send("groups/create"),
+
+            CHANGES_SEND: send("groups/changes")
+        },
         SYNC: {
             PARTICIPANT_SEND: send("messages/participant"),
             PARTICIPANT_SUB: sub("messages/participant"),

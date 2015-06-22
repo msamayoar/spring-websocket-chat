@@ -1,7 +1,7 @@
 package com.tempest.moonlight.server.services.users;
 
 import com.tempest.moonlight.server.domain.User;
-import com.tempest.moonlight.server.repository.dao.UserDAO;
+import com.tempest.moonlight.server.repository.dao.users.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

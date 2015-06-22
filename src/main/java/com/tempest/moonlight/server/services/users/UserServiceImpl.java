@@ -1,8 +1,12 @@
 package com.tempest.moonlight.server.services.users;
 
+import com.tempest.moonlight.server.domain.ParticipantType;
 import com.tempest.moonlight.server.domain.User;
+import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
 import com.tempest.moonlight.server.exceptions.UserAlreadyExistsException;
-import com.tempest.moonlight.server.repository.dao.UserDAO;
+import com.tempest.moonlight.server.repository.dao.users.UserDAO;
+import com.tempest.moonlight.server.services.contacts.ContactsService;
+import com.tempest.moonlight.server.util.CollectionsUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +18,7 @@ import org.springframework.util.StringUtils;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * Created by Yurii on 2015-05-08.
@@ -25,6 +30,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserDAO userDAO;
+
+    @Autowired
+    private ContactsService contactsService;
 
     private MessageDigest messageDigestInstance;
 
@@ -67,8 +75,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Collection<User> getMatching(String login) {
-        return userMatcher.getMatching(login);
+    public Collection<GenericParticipant> getMatching(String login) {
+        Collection<User> matching = userMatcher.getMatching(login);
+        matching.remove(new User(login));
+        Set<GenericParticipant> matchingParticipants = CollectionsUtils.convertToSet(
+                matching,
+                user -> new GenericParticipant(ParticipantType.USER, user.getLogin())
+        );
+        matchingParticipants.removeAll(ContactsService.asGenericParticipants(contactsService.getContactsOfUser(login)));
+        return matchingParticipants;
     }
 
     private static String encodePassword(String password) {

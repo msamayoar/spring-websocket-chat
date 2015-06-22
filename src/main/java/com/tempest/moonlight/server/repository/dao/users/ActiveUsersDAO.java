@@ -1,6 +1,7 @@
-package com.tempest.moonlight.server.repository.dao;
+package com.tempest.moonlight.server.repository.dao.users;
 
 import com.tempest.moonlight.server.event.UserSession;
+import com.tempest.moonlight.server.repository.dao.IdentifiedEntityDAO;
 
 import java.util.Collection;
 import java.util.Map;

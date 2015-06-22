@@ -80,6 +80,8 @@ public class ContactRequest implements IdentifiedEntity<ContactRequest>, Seriali
 
     private long time;
 
+    private boolean system;
+
     public ContactRequest() {
     }
 
@@ -97,6 +99,7 @@ public class ContactRequest implements IdentifiedEntity<ContactRequest>, Seriali
                 ", contact=" + contact +
                 ", status=" + status +
                 ", time=" + time +
+                ", system=" + system +
                 '}';
     }
 
@@ -168,6 +171,15 @@ public class ContactRequest implements IdentifiedEntity<ContactRequest>, Seriali
 
     public ContactRequest setTime(long time) {
         this.time = time;
+        return this;
+    }
+
+    public boolean isSystem() {
+        return system;
+    }
+
+    public ContactRequest setSystem(boolean system) {
+        this.system = system;
         return this;
     }
 }

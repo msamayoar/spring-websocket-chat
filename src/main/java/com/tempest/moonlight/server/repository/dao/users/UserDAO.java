@@ -1,6 +1,7 @@
-package com.tempest.moonlight.server.repository.dao;
+package com.tempest.moonlight.server.repository.dao.users;
 
 import com.tempest.moonlight.server.domain.User;
+import com.tempest.moonlight.server.repository.dao.DAO;
 
 import java.util.Collection;
 import java.util.Set;

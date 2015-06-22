@@ -1,15 +1,14 @@
-package com.tempest.moonlight.server.repository.dao;
+package com.tempest.moonlight.server.repository.dao.messages;
 
 import com.tempest.moonlight.server.domain.ParticipantType;
 import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
 import com.tempest.moonlight.server.domain.messages.ChatMessage;
 import com.tempest.moonlight.server.domain.MessageKey;
+import com.tempest.moonlight.server.repository.dao.AbstractMockDAO;
 import com.tempest.moonlight.server.util.CollectionsUtils;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.function.Predicate;
 
 /**

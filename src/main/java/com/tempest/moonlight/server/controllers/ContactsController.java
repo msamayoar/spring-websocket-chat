@@ -46,15 +46,9 @@ public class ContactsController {
     public Collection<GenericParticipantDTO> getContacts(Principal principal) {
         return getContactsOfUser(principal.getName());
     }
-    /*
-    public Collection<GenericContactDTO> getContacts(Principal principal) {
-        Collection<GenericContact> contacts = contactsService.getContactsOfUser(principal.getName());
-        return (Collection<GenericContactDTO>) dtoConverter.convertToDTOs(contacts);
-    }
-    */
 
     private Collection<GenericParticipantDTO> getContactsOfUser(String login) {
-        Set<GenericParticipant> participants = contactsService.getContactsOfUser(login).stream().map(GenericContact::getContact).collect(Collectors.toSet());
+        Set<GenericParticipant> participants = new HashSet<>(ContactsService.asGenericParticipants(contactsService.getContactsOfUser(login)));
         logger.info("Contacts of user = [login = " + login + ", contacts = " + participants);
         return (Collection<GenericParticipantDTO>) dtoConverter.convertToDTOs(participants);
     }
@@ -84,28 +78,30 @@ public class ContactsController {
     @SendToUser(value = "/queue/contacts/reply", broadcast = false)
     public ContactRequestDTO onContactRequestResponse(Principal principal, @Payload ContactRequestDTO contactRequestDTO) throws ContactRequestException {
         ContactRequest contactRequest = dtoConverter.convertFromDTO(contactRequestDTO, ContactRequest.class);
+
         contactRequest.setRecipient(principal.getName());
-        if(contactsService.processContactRequestResponse(contactRequest)) {
 
-            ContactRequestDTO responseDTO = (ContactRequestDTO) dtoConverter.convertToDTO(contactRequest);
-            GenericParticipant contact = contactRequest.getContact();
+        logger.info("onContactRequestResponse: contactRequest = " + contactRequest);
+        contactsService.processContactRequestResponse(contactRequest);
+
+        ContactRequestDTO responseDTO = (ContactRequestDTO) dtoConverter.convertToDTO(contactRequest);
+        GenericParticipant contact = contactRequest.getContact();
+        if(contact.getType() == ParticipantType.USER) {
             toParticipantSender.sendToUserQueue(contact, "contacts/reply", responseDTO);
-
-            Map<GenericParticipant, Collection<GenericParticipantDTO>> usersContactsUpdated = new HashMap<>();
-            contact.getSignature();
-            usersContactsUpdated.put(contact, getContactsOfUser(contact.getSignature()));
-            String recipient = contactRequest.getRecipient();
-            usersContactsUpdated.put(
-                    new GenericParticipant(ParticipantType.USER, recipient),
-                    getContactsOfUser(recipient)
-            );
-
-            toParticipantSender.sendToUsersQueue(usersContactsUpdated, "contacts");
-
-            return responseDTO;
-        } else {
-            return null;//TODO
         }
+
+        Map<GenericParticipant, Collection<GenericParticipantDTO>> usersContactsUpdated = new HashMap<>();
+        contact.getSignature();
+        usersContactsUpdated.put(contact, getContactsOfUser(contact.getSignature()));
+        String recipient = contactRequest.getRecipient();
+        usersContactsUpdated.put(
+                new GenericParticipant(ParticipantType.USER, recipient),
+                getContactsOfUser(recipient)
+        );
+
+        toParticipantSender.sendToUsersQueue(usersContactsUpdated, "contacts");
+
+        return responseDTO;
     }
 
     @MessageExceptionHandler

@@ -1,6 +1,7 @@
-package com.tempest.moonlight.server.repository.dao;
+package com.tempest.moonlight.server.repository.dao.users;
 
 import com.tempest.moonlight.server.domain.User;
+import com.tempest.moonlight.server.repository.dao.AbstractMockDAO;
 import com.tempest.moonlight.server.util.CollectionsUtils;
 import org.springframework.stereotype.Repository;
 

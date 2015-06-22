@@ -59,7 +59,7 @@ public class ContactsServiceImpl implements ContactsService {
 
     @Override
     public boolean processContactRequestResponse(ContactRequest response) throws ContactRequestException {
-        if(!contactRequestDAO.exists(response)) {
+        if(!(response.isSystem() || contactRequestDAO.exists(response))) {
             throw new IncomingContactRequestNotFoundException(response);
         }
         ContactRequest.Status responseStatus = response.getStatus();
@@ -68,26 +68,30 @@ public class ContactsServiceImpl implements ContactsService {
         }
 
         ContactRequest contactRequest = contactRequestDAO.get(response);
-
+        GenericParticipant owner = new GenericParticipant(ParticipantType.USER, contactRequest.getRecipient());
         if(responseStatus == ContactRequest.Status.APPROVED) {
             response.setTime(System.currentTimeMillis());
             contactRequestDAO.delete(contactRequest);
             return addContact(
                     new GenericContact(
-                            ParticipantType.USER, contactRequest.getRecipient(),
+                            owner,
+                            contactRequest.getContact()
+                    )
+            );
+        } else {
+            return removeContact(
+                    new GenericContact(
+                            owner,
                             contactRequest.getContact()
                     )
             );
         }
-        //TODO handle REJECTED and REVOKED
-
-        return false;
     }
 
     @Override
     public boolean addContact(GenericContact contact) {
         GenericContact inverted = contact.invert();
-        if(!(contactsDAO.exists(contact) || contactsDAO.exists(inverted))) {
+        if(contactsDAO.exists(contact) || contactsDAO.exists(inverted)) {
             contactsDAO.save(contact);
             contactsDAO.save(inverted);
             return true;
@@ -97,8 +101,10 @@ public class ContactsServiceImpl implements ContactsService {
 
     @Override
     public boolean removeContact(GenericContact genericContact) {
-        if(contactsDAO.exists(genericContact)) {
+        GenericContact inverted = genericContact.invert();
+        if(contactsDAO.exists(genericContact) || contactsDAO.exists(inverted)) {
             contactsDAO.delete(genericContact);
+            contactsDAO.delete(inverted);
             return true;
         }
         return false;

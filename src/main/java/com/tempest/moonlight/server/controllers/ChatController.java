@@ -1,14 +1,13 @@
 package com.tempest.moonlight.server.controllers;
 
 import java.security.Principal;
-import java.util.Collection;
 
 import com.tempest.moonlight.server.domain.ParticipantType;
 import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
 import com.tempest.moonlight.server.domain.messages.MessageDeliveryStatus;
 import com.tempest.moonlight.server.domain.messages.MessageStatus;
 import com.tempest.moonlight.server.exceptions.chat.*;
-import com.tempest.moonlight.server.repository.dao.ActiveUsersDAO;
+import com.tempest.moonlight.server.repository.dao.users.ActiveUsersDAO;
 import com.tempest.moonlight.server.services.messages.MessageService;
 import com.tempest.moonlight.server.services.users.UserService;
 import com.tempest.moonlight.server.services.dto.DtoConverter;
@@ -23,9 +22,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -67,12 +64,12 @@ public class ChatController {
     */
 
     @MessageMapping("/chat/private")
-    public void onUserPrivate(Principal sender, Message message, @Payload ChatMessageDTO chatMessageDTO) throws MessageHandlingException {
+    public void onPrivateMessage(Principal sender, Message message, @Payload ChatMessageDTO chatMessageDTO) throws MessageHandlingException {
         processUserPrivateMessage(sender, message, chatMessageDTO);
     }
 
     @MessageMapping("/chat/private/{login}")
-    public void onUserPrivate(Principal sender, Message message, @Payload ChatMessageDTO chatMessageDTO, @DestinationVariable("login") String login) throws MessageHandlingException {
+    public void onPrivateMessage(Principal sender, Message message, @Payload ChatMessageDTO chatMessageDTO, @DestinationVariable("login") String login) throws MessageHandlingException {
         chatMessageDTO.setRecipient(login);
         processUserPrivateMessage(sender, message, chatMessageDTO);
     }
@@ -131,8 +128,13 @@ public class ChatController {
         return chatMessage;
     }
 
+    @MessageMapping("/chat/group")
+    public void onGroupMessage(Principal sender, Message message, @Payload ChatMessageDTO chatMessageDTO) throws MessageHandlingException {
+        processUserPrivateMessage(sender, message, chatMessageDTO);
+    }
+
     @MessageMapping("messages/delivery")
-    public void onMessagedeliveryStatus(Principal principal, MessageDeliveryStatus deliveryStatus) throws MessageHandlingException {
+    public void onMessageDeliveryStatus(Principal principal, MessageDeliveryStatus deliveryStatus) throws MessageHandlingException {
         deliveryStatus.setTo(principal.getName());
         messageService.updateMessageDeliveryStatus(deliveryStatus);
 

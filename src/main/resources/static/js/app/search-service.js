@@ -29,7 +29,7 @@ servicesModule.factory('SearchService', ['AppEvents', 'ChatSocket', function(app
         chatSocket.send(
             paths.USERS
         )
-    }
+    };
 
     return {
         initSubscription: function() {
