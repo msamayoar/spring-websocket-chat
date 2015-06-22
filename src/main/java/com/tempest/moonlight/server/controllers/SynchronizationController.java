@@ -6,10 +6,13 @@ import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
 import com.tempest.moonlight.server.domain.messages.ChatMessage;
 import com.tempest.moonlight.server.exceptions.contacts.ContactsException;
 import com.tempest.moonlight.server.exceptions.contacts.InvalidContactException;
+import com.tempest.moonlight.server.exceptions.groups.GroupsException;
+import com.tempest.moonlight.server.exceptions.groups.IllegalGroupAccessException;
 import com.tempest.moonlight.server.services.dto.DtoConverter;
 import com.tempest.moonlight.server.services.dto.contacts.GenericContactDTO;
 import com.tempest.moonlight.server.services.dto.contacts.GenericParticipantDTO;
 import com.tempest.moonlight.server.services.dto.messages.ChatMessageDTO;
+import com.tempest.moonlight.server.services.groups.GroupService;
 import com.tempest.moonlight.server.services.messages.MessageService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,9 @@ public class SynchronizationController {
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    private GroupService groupService;
 
     @MessageMapping("messages/all")
     @SendToUser(value = "messages/all", broadcast = false)
@@ -65,7 +71,7 @@ public class SynchronizationController {
     @MessageMapping("messages/participant")
     @SendToUser(value = "/queue/messages/participant", broadcast = false)
 //    @SendToUser(value = "messages/participant", broadcast = false)
-    public Collection<ChatMessageDTO> onGetMessagesWithContactRequest(Principal principal, @Payload GenericParticipantDTO participantDTO) throws ContactsException {
+    public Collection<ChatMessageDTO> onGetMessagesWithContactRequest(Principal principal, @Payload GenericParticipantDTO participantDTO) throws ContactsException, IllegalGroupAccessException {
         GenericParticipant contact = dtoConverter.convertFromDTO(participantDTO);
         if(contact == null) {
             throw new InvalidContactException();
@@ -74,6 +80,13 @@ public class SynchronizationController {
             contact.setType(ParticipantType.USER);
         }
         String name = principal.getName();
+
+        if(contact.getType() == ParticipantType.GROUP) {
+            if(!groupService.checkUserBelongsToGroup(contact.getSignature(), name)) {
+                throw new IllegalGroupAccessException(contact.getSignature());
+            }
+        }
+
 //        logger.error("onGetMessagesWithContactRequest: messages = " + messagesBetween);
         return (Collection<ChatMessageDTO>) dtoConverter.convertToDTOs(messageService.getMessagesBetween(name, contact));
     }
@@ -86,6 +99,11 @@ public class SynchronizationController {
 
     @SendToUser(value = "/queue/errors", broadcast = false)
     public String onMessageHandlingException(ContactsException e) {
+        return e.getMessage();
+    }
+
+    @SendToUser(value = "/queue/errors", broadcast = false)
+    public String onGroupsException(GroupsException e) {
         return e.getMessage();
     }
 }

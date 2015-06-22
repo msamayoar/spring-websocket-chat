@@ -1,6 +1,7 @@
 package com.tempest.moonlight.server.services.messages;
 
 import com.tempest.moonlight.server.domain.MessageKey;
+import com.tempest.moonlight.server.domain.ParticipantType;
 import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
 import com.tempest.moonlight.server.domain.messages.ChatMessage;
 import com.tempest.moonlight.server.domain.messages.MessageDeliveryStatus;
@@ -39,7 +40,11 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public Collection<ChatMessage> getMessagesBetween(String user, GenericParticipant companion) {
-        return messageDAO.getMessagesBetween(user, companion);
+        if(companion.getType() == ParticipantType.GROUP) {
+            return getMessagesOfGroup(companion.getSignature());
+        } else {
+            return messageDAO.getMessagesBetween(user, companion);
+        }
     }
 
     @Override
@@ -49,7 +54,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public Collection<ChatMessage> getMessagesOfGroup(String group) {
-        return null;
+        return messageDAO.getMessagesTo(new GenericParticipant(ParticipantType.GROUP, group));
     }
 
     @Override

@@ -14,4 +14,5 @@ import java.util.Collection;
 public interface MessageDAO extends DAO<ChatMessage, MessageKey> {
     Collection<ChatMessage> getMessagesOfUser(String login);
     Collection<ChatMessage> getMessagesBetween(String user, GenericParticipant companion);
+    Collection<ChatMessage> getMessagesTo(GenericParticipant genericParticipant);
 }

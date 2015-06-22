@@ -29,6 +29,10 @@ public class MessageDAOMockImpl extends AbstractMockDAO<ChatMessage, MessageKey>
         return key -> key.type == participant.getType() && (participant.getSignature().equals(key.from) || participant.getSignature().equals(key.to));
     }
 
+    private static Predicate<MessageKey> messagesToParticipantPredicate(GenericParticipant participant) {
+        return key -> key.type == participant.getType() && participant.getSignature().equals(key.to);
+    }
+
     private static Predicate<MessageKey> messagesBetweenPredicate(String user, GenericParticipant companion) {
         return messagesOfUserPredicate(user).and(messagesOfParticipantPredicate(companion));
     }
@@ -36,5 +40,10 @@ public class MessageDAOMockImpl extends AbstractMockDAO<ChatMessage, MessageKey>
     @Override
     public Collection<ChatMessage> getMessagesBetween(String user, GenericParticipant companion) {
         return CollectionsUtils.filterMapValuesByKey(getMap(), messagesBetweenPredicate(user, companion));
+    }
+
+    @Override
+    public Collection<ChatMessage> getMessagesTo(GenericParticipant genericParticipant) {
+        return CollectionsUtils.filterMapValuesByKey(getMap(), messagesToParticipantPredicate(genericParticipant));
     }
 }

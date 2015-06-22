@@ -11,9 +11,7 @@ import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
 import com.tempest.moonlight.server.domain.messages.MessageDeliveryStatus;
 import com.tempest.moonlight.server.domain.messages.MessageStatus;
 import com.tempest.moonlight.server.exceptions.chat.*;
-import com.tempest.moonlight.server.exceptions.groups.GroupNotExistsException;
 import com.tempest.moonlight.server.repository.dao.users.ActiveUsersDAO;
-import com.tempest.moonlight.server.services.dto.ServerToClientDTO;
 import com.tempest.moonlight.server.services.groups.GroupService;
 import com.tempest.moonlight.server.services.messages.MessageService;
 import com.tempest.moonlight.server.services.users.UserService;
@@ -88,7 +86,7 @@ public class ChatController {
         ChatMessage chatMessage = dtoConverter.convertFromDTO(chatMessageDTO, ChatMessage.class);
         chatMessage.setFrom(sender.getName());
 
-        chatMessage = onUserPrivateMessageInner(chatMessage, message, ParticipantType.USER);
+        chatMessage = onUserMessageInner(chatMessage, message, ParticipantType.USER);
 
         sendDeliveryStatus(chatMessage.getFrom(), new MessageDeliveryStatus(chatMessage, MessageStatus.ARRIVED));
         toParticipantSender.sendToUserQueue(
@@ -98,7 +96,7 @@ public class ChatController {
         );
     }
 
-    private ChatMessage onUserPrivateMessageInner(ChatMessage chatMessage, Message message, ParticipantType recipientType) throws MessageHandlingException {
+    private ChatMessage onUserMessageInner(ChatMessage chatMessage, Message message, ParticipantType recipientType) throws MessageHandlingException {
         GenericParticipant recipient = checkSetUpMessage(chatMessage, message, recipientType).getRecipient();
 
         String recipientSignature = recipient.getSignature();
@@ -168,7 +166,7 @@ public class ChatController {
         ChatMessage chatMessage = dtoConverter.convertFromDTO(chatMessageDTO);
         chatMessage.setFrom(sender.getName());
 
-        chatMessage = onUserPrivateMessageInner(chatMessage, message, ParticipantType.GROUP);
+        chatMessage = onUserMessageInner(chatMessage, message, ParticipantType.GROUP);
 
         sendDeliveryStatus(chatMessage.getFrom(), new MessageDeliveryStatus(chatMessage, MessageStatus.ARRIVED));
 
