@@ -83,6 +83,19 @@ servicesModule.factory('MessagesService', ['$injector', 'AppEvents', 'ChatSocket
         queuedMessages.push(message);
     };
 
+    var isFromContact = function (message, contact) {
+        if(message.recipientType === appConst.CONTACTS.TYPE.USER){
+            if(message.from === contact.signature) {
+                return true;
+            }
+        } else if(message.recipientType === appConst.CONTACTS.TYPE.GROUP){
+            if(message.recipient === contact.signature) {
+                return true;
+            }
+        }
+        return false;
+    };
+
     return {
         get: function () { return messages; },
         set: function (_messages) { messages = _messages; },
@@ -104,10 +117,7 @@ servicesModule.factory('MessagesService', ['$injector', 'AppEvents', 'ChatSocket
                     var message = JSON.parse(messageStr.body);
                     var contactsService = $injector.get("ContactsService");
 
-                    //TODO: Fix inconsistency in message json: recipient/to. Should be either "recipient" or "to"
-
-                    if(message.from !== contactsService.selected().signature && (message.to !== contactsService.selected().signature
-                            || message.recipient !== contactsService.selected().signature)) {
+                    if(!isFromContact(message, contactsService.selected())) {
                         var contactUsername = "";
                         var contactType = 0;
                         if(message.recipientType === appConst.CONTACTS.TYPE.USER) {
@@ -120,8 +130,10 @@ servicesModule.factory('MessagesService', ['$injector', 'AppEvents', 'ChatSocket
                         contactsService.incrementQueuedMessagesAmount(contactUsername, contactType);
                         addMessageToQueue(message);
                     } else {
-                        confirmPrivateMessageDelivery(message);
-                        message.priv = true;
+                        if(message.recipientType === appConst.CONTACTS.TYPE.USER) {
+                            confirmPrivateMessageDelivery(message);
+                            message.priv = true;
+                        }
                         addMessage(message, appConst.CHAT.MESSAGE.STATUS.DELIVERED);
                     }
                 }

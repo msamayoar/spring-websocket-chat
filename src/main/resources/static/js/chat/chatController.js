@@ -95,6 +95,7 @@ controllersModule.controller('ChatController', ['$scope', '$location', '$interva
         switch(conversation.contact.type) {
             case appConst.CHAT.PARTICIPANT.TYPE.USER:
                 $scope.conversation.name = conversation.contact.signature;
+                $scope.conversation.isGroup = false;
                 break;
             case appConst.CHAT.PARTICIPANT.TYPE.GROUP:
                 $scope.conversation.name = conversation.contact.signature;

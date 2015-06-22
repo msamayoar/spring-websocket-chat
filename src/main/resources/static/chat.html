@@ -77,7 +77,7 @@
 						<span class="conversation-topic">{{conversation.name ? conversation.name : "Select a contact in the list"}}</span>
 
 						<div class="btn btn-primary" ng-show="conversation.isGroup" style="float: right;" ng-click="inviteUserAction()">Invite</div>
-						<input ng-show="group.inviteUser" type="text" class="form-control" style="float: right; width: 60px; margin-left: 5px;"
+						<input ng-show="group.inviteUser" type="text" class="form-control" style="float: right; width: 120px; margin-left: 5px;"
 							   placeholder="Enter user name..."
 							   ng-model="group.inviteUserUsername" ng-keyup="$event.keyCode == 13 ? inviteUser() : ''"/>
 					</div>
