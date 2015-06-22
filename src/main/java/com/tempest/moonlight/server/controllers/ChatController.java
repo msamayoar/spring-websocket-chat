@@ -1,6 +1,10 @@
 package com.tempest.moonlight.server.controllers;
 
 import java.security.Principal;
+import java.util.Collection;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.tempest.moonlight.server.domain.ParticipantType;
 import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
@@ -9,6 +13,7 @@ import com.tempest.moonlight.server.domain.messages.MessageStatus;
 import com.tempest.moonlight.server.exceptions.chat.*;
 import com.tempest.moonlight.server.exceptions.groups.GroupNotExistsException;
 import com.tempest.moonlight.server.repository.dao.users.ActiveUsersDAO;
+import com.tempest.moonlight.server.services.dto.ServerToClientDTO;
 import com.tempest.moonlight.server.services.groups.GroupService;
 import com.tempest.moonlight.server.services.messages.MessageService;
 import com.tempest.moonlight.server.services.users.UserService;
@@ -105,6 +110,9 @@ public class ChatController {
             if(!groupService.existsGroup(recipientSignature)) {
                 throw new RecipientDoesNotExistException(ParticipantType.GROUP, recipientSignature);
             }
+            if(!groupService.checkUserBelongsToGroup(recipientSignature, chatMessage.getFrom())) {
+                throw new IllegalGroupRecipientException(recipientSignature);
+            }
         }
 
         logger.info("user sent message = " + chatMessage);
@@ -163,10 +171,18 @@ public class ChatController {
         chatMessage = onUserPrivateMessageInner(chatMessage, message, ParticipantType.GROUP);
 
         sendDeliveryStatus(chatMessage.getFrom(), new MessageDeliveryStatus(chatMessage, MessageStatus.ARRIVED));
-        toParticipantSender.sendToUserQueue(
-                chatMessage.getRecipient().getSignature(),
-                "chat/incoming",
-                dtoConverter.convertToDTO(chatMessage, ChatMessageDTO.class)
+
+        ChatMessageDTO groupMessageDTO = (ChatMessageDTO) dtoConverter.convertToDTO(chatMessage, ChatMessageDTO.class);
+        Collection<GenericParticipant> participants = groupService.getParticipants(chatMessage.getRecipient().getSignature());
+        Map<GenericParticipant, ChatMessageDTO> participantsMessagesMap = participants.stream().collect(
+                Collectors.toMap(
+                        Function.identity(),
+                        participant -> groupMessageDTO
+                )
+        );
+        toParticipantSender.sendToUsersQueue(
+                participantsMessagesMap,
+                "chat/incoming"
         );
     }
 
