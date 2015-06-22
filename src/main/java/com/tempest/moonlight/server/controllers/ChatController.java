@@ -178,6 +178,7 @@ public class ChatController {
                         participant -> groupMessageDTO
                 )
         );
+        participantsMessagesMap.remove(new GenericParticipant(ParticipantType.USER, sender.getName()));
         toParticipantSender.sendToUsersQueue(
                 participantsMessagesMap,
                 "chat/incoming"
