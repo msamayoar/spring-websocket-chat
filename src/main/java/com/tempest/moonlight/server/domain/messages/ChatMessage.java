@@ -4,9 +4,9 @@ import com.tempest.moonlight.server.annotations.DTO;
 import com.tempest.moonlight.server.domain.MessageKey;
 import com.tempest.moonlight.server.domain.ParticipantType;
 import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
-import com.tempest.moonlight.server.repository.dao.IdentifiedEntity;
-import com.tempest.moonlight.server.services.dto.EntityDTO;
-import com.tempest.moonlight.server.services.dto.messages.ChatMessageDTO;
+import com.tempest.moonlight.server.common.dao.IdentifiedEntity;
+import com.tempest.moonlight.server.common.dto.EntityDTO;
+import com.tempest.moonlight.server.messages.dto.ChatMessageDTO;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;

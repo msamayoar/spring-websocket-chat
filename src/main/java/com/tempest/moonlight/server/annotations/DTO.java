@@ -1,6 +1,6 @@
 package com.tempest.moonlight.server.annotations;
 
-import com.tempest.moonlight.server.services.dto.*;
+import com.tempest.moonlight.server.common.dto.*;
 
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;

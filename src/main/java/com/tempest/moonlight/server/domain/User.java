@@ -1,6 +1,6 @@
 package com.tempest.moonlight.server.domain;
 
-import com.tempest.moonlight.server.repository.dao.IdentifiedEntity;
+import com.tempest.moonlight.server.common.dao.IdentifiedEntity;
 
 /**
  * Created by Yurii on 4/21/2015.

@@ -1,6 +1,6 @@
 package com.tempest.moonlight.server.exceptions.local.dto;
 
-import com.tempest.moonlight.server.services.dto.EntityDTO;
+import com.tempest.moonlight.server.common.dto.EntityDTO;
 
 /**
  * Created by Yurii on 2015-06-18.

@@ -1,7 +1,7 @@
 package com.tempest.moonlight.server.annotations;
 
 import com.tempest.moonlight.server.exceptions.local.dto.DtoException;
-import com.tempest.moonlight.server.services.dto.DtoConverter;
+import com.tempest.moonlight.server.common.dto.DtoConverter;
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;

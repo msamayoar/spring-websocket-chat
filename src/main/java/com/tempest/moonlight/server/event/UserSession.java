@@ -1,7 +1,7 @@
 package com.tempest.moonlight.server.event;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.tempest.moonlight.server.repository.dao.IdentifiedEntity;
+import com.tempest.moonlight.server.common.dao.IdentifiedEntity;
 import com.tempest.moonlight.server.serialization.UserSessionMessageSerializer;
 
 import java.io.Serializable;

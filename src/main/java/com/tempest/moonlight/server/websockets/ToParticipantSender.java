@@ -1,5 +1,6 @@
 package com.tempest.moonlight.server.websockets;
 
+import com.tempest.moonlight.server.common.dto.ToMessageConvertedEntity;
 import com.tempest.moonlight.server.domain.contacts.GenericParticipant;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,10 @@ public class ToParticipantSender {
     public void sendToUserQueue(String login, String destination, Object message) {
         logger.error("sendToUserQueue(" + "login = [" + login + "], destination = [" + destination + "], message = [" + message + "]" + ")");
         simpMessagingTemplate.convertAndSend("/user/" + login + "/queue/" + destination, message);
+    }
+
+    public void sendToUserQueue(String login, String destination, ToMessageConvertedEntity toMessageConvertedEntity) {
+        simpMessagingTemplate.convertAndSend("/user/" + login + "/queue/" + destination, toMessageConvertedEntity.getPayload(), toMessageConvertedEntity.getHeaders());
     }
 
     public void sendToUserQueue(GenericParticipant participant, String destination, Object message) {

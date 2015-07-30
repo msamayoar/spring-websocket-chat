@@ -1,8 +1,8 @@
 package com.tempest.moonlight.server.config;
 
-import com.tempest.moonlight.server.repository.dao.users.UserDAO;
+import com.tempest.moonlight.server.users.dao.UserDAO;
 //import com.tempest.moonlight.server.security.CustomAuthenticationManager;
-import com.tempest.moonlight.server.repository.dao.users.UserDAOMockImpl;
+import com.tempest.moonlight.server.users.dao.UserDAOMockImpl;
 import com.tempest.moonlight.server.security.CustomAuthenticationManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

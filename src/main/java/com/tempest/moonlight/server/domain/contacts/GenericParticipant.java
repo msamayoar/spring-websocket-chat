@@ -2,8 +2,8 @@ package com.tempest.moonlight.server.domain.contacts;
 
 import com.tempest.moonlight.server.annotations.DTO;
 import com.tempest.moonlight.server.domain.ParticipantType;
-import com.tempest.moonlight.server.services.dto.EntityDTO;
-import com.tempest.moonlight.server.services.dto.contacts.GenericParticipantDTO;
+import com.tempest.moonlight.server.common.dto.EntityDTO;
+import com.tempest.moonlight.server.contacts.dto.GenericParticipantDTO;
 import org.springframework.stereotype.Component;
 
 /**

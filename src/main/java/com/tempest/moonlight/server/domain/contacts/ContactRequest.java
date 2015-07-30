@@ -2,9 +2,9 @@ package com.tempest.moonlight.server.domain.contacts;
 
 import com.tempest.moonlight.server.annotations.DTO;
 import com.tempest.moonlight.server.domain.HasIntValue;
-import com.tempest.moonlight.server.repository.dao.IdentifiedEntity;
-import com.tempest.moonlight.server.services.dto.EntityDTO;
-import com.tempest.moonlight.server.services.dto.contacts.ContactRequestDTO;
+import com.tempest.moonlight.server.common.dao.IdentifiedEntity;
+import com.tempest.moonlight.server.common.dto.EntityDTO;
+import com.tempest.moonlight.server.contacts.dto.ContactRequestDTO;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
